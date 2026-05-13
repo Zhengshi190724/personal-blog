@@ -26,7 +26,14 @@
       "Bash(git init *)",
       "Bash(cat)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(npx vercel *)",
+      "WebFetch(domain:personal-blog-eight-ashen-54.vercel.app)",
+      "Bash(curl -sI \"https://personal-blog-eight-ashen-54.vercel.app\")",
+      "Bash(curl *)",
+      "Bash(gh auth *)",
+      "Bash(winget install *)",
+      "Bash(git rm *)"
     ]
   }
 }
