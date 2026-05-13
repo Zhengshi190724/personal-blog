@@ -1,0 +1,4 @@
+[      35ms] [INFO] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113 @ https://www.deepseek.com/:9
+[     189ms] [INFO] %c[__pageVisit]:%c 访问页面 [/] [0]：232ms color: blue;  {payload: Object}  @ https://www.deepseek.com/_next/static/chunks/2278-4469e39fec2e81cf.js:0
+[     190ms] [INFO] %c[__tti]:%c / TTI 上报：233ms color: blue;  {payload: Object}  @ https://www.deepseek.com/_next/static/chunks/2278-4469e39fec2e81cf.js:0
+[    2891ms] [INFO] %c[__pageVisibilityChange]:%c 页面隐藏 color: blue;  {payload: Object}  @ https://www.deepseek.com/_next/static/chunks/2278-4469e39fec2e81cf.js:0

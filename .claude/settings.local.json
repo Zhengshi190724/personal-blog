@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell.exe *)",
+      "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")",
+      "Bash(npx --version)",
+      "Bash(export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright/)",
+      "Bash(export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0)",
+      "Bash(npx playwright *)",
+      "Bash(npm config *)",
+      "Bash(npm install *)",
+      "Bash(npm list *)",
+      "Bash(where npx *)",
+      "Bash(export PATH=\"/c/Program Files/nodejs:/c/Users/26012/AppData/Roaming/npm:$PATH\")",
+      "Bash(timeout 30 playwright-mcp --browser msedge)",
+      "Bash(/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe *)",
+      "Bash(npm --version)",
+      "Bash(npm view *)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_run_code_unsafe",
+      "mcp__playwright__browser_take_screenshot",
+      "Bash(npm run *)",
+      "Bash(git init *)",
+      "Bash(cat)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

@@ -1,0 +1,99 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "My Blog" [ref=e5] [cursor=pointer]:
+        - /url: /
+      - navigation [ref=e6]:
+        - link "Posts" [ref=e7] [cursor=pointer]:
+          - /url: /
+      - button "Switch to dark mode" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - article [ref=e14]:
+          - link "CSS 布局完全指南" [ref=e15] [cursor=pointer]:
+            - /url: /post/css-layout-guide
+            - heading "CSS 布局完全指南" [level=2] [ref=e16]
+          - time [ref=e17]: 2026年5月12日
+          - generic [ref=e18]:
+            - link "css" [ref=e19] [cursor=pointer]:
+              - /url: /tag/css
+            - link "frontend" [ref=e20] [cursor=pointer]:
+              - /url: /tag/frontend
+            - link "tutorial" [ref=e21] [cursor=pointer]:
+              - /url: /tag/tutorial
+          - paragraph [ref=e22]: 掌握现代 CSS 布局的核心技术：Flexbox、Grid 和 Container Queries。从基础概念到实际案例，一文掌握响应式布局的精髓。
+          - link "Read more →" [ref=e23] [cursor=pointer]:
+            - /url: /post/css-layout-guide
+        - article [ref=e24]:
+          - link "React 18 新特性详解" [ref=e25] [cursor=pointer]:
+            - /url: /post/react-18-features
+            - heading "React 18 新特性详解" [level=2] [ref=e26]
+          - time [ref=e27]: 2026年5月11日
+          - generic [ref=e28]:
+            - link "react" [ref=e29] [cursor=pointer]:
+              - /url: /tag/react
+            - link "javascript" [ref=e30] [cursor=pointer]:
+              - /url: /tag/javascript
+            - link "frontend" [ref=e31] [cursor=pointer]:
+              - /url: /tag/frontend
+          - paragraph [ref=e32]: React 18 带来了许多令人兴奋的新特性，包括自动批处理、并发渲染、Suspense 改进等。本文详细解析这些新特性的使用方法和原理。
+          - link "Read more →" [ref=e33] [cursor=pointer]:
+            - /url: /post/react-18-features
+        - article [ref=e34]:
+          - link "Hello World - 我的第一篇博客" [ref=e35] [cursor=pointer]:
+            - /url: /post/hello-world
+            - heading "Hello World - 我的第一篇博客" [level=2] [ref=e36]
+          - time [ref=e37]: 2026年5月10日
+          - generic [ref=e38]:
+            - link "introduction" [ref=e39] [cursor=pointer]:
+              - /url: /tag/introduction
+            - link "personal" [ref=e40] [cursor=pointer]:
+              - /url: /tag/personal
+          - paragraph [ref=e41]: 欢迎来到我的个人博客！这是第一篇博文，介绍我自己和这个博客的内容方向。
+          - link "Read more →" [ref=e42] [cursor=pointer]:
+            - /url: /post/hello-world
+      - complementary [ref=e43]:
+        - heading "Tags" [level=3] [ref=e44]
+        - list [ref=e45]:
+          - listitem [ref=e46]:
+            - link "All Posts" [ref=e47] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=e48]:
+            - link "css 1" [ref=e49] [cursor=pointer]:
+              - /url: /tag/css
+              - text: css
+              - generic [ref=e50]: "1"
+          - listitem [ref=e51]:
+            - link "frontend 2" [ref=e52] [cursor=pointer]:
+              - /url: /tag/frontend
+              - text: frontend
+              - generic [ref=e53]: "2"
+          - listitem [ref=e54]:
+            - link "introduction 1" [ref=e55] [cursor=pointer]:
+              - /url: /tag/introduction
+              - text: introduction
+              - generic [ref=e56]: "1"
+          - listitem [ref=e57]:
+            - link "javascript 1" [ref=e58] [cursor=pointer]:
+              - /url: /tag/javascript
+              - text: javascript
+              - generic [ref=e59]: "1"
+          - listitem [ref=e60]:
+            - link "personal 1" [ref=e61] [cursor=pointer]:
+              - /url: /tag/personal
+              - text: personal
+              - generic [ref=e62]: "1"
+          - listitem [ref=e63]:
+            - link "react 1" [ref=e64] [cursor=pointer]:
+              - /url: /tag/react
+              - text: react
+              - generic [ref=e65]: "1"
+          - listitem [ref=e66]:
+            - link "tutorial 1" [ref=e67] [cursor=pointer]:
+              - /url: /tag/tutorial
+              - text: tutorial
+              - generic [ref=e68]: "1"
+  - contentinfo [ref=e69]:
+    - paragraph [ref=e70]: Built with React + Vite © 2026
