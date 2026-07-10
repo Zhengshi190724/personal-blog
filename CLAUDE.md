@@ -2,20 +2,20 @@
 
 ## Overview
 
-A personal blog site built with React 18 + Vite 6, deployed on Vercel. Content managed via Markdown files in `src/content/`. Supports dark mode, tag filtering, code syntax highlighting, and responsive design.
+A personal blog site built with React 18 + Vite 6, deployed on Cloudflare Pages. Content managed via Markdown files in `src/content/`. Supports dark mode, tag filtering, code syntax highlighting, and responsive design.
 
-- **Live URL**: https://personal-blog-eight-ashen-54.vercel.app
+- **Live URL**: https://personal-blog-ot6.pages.dev
 - **GitHub**: https://github.com/Zhengshi190724/personal-blog
-- **Vercel Project**: zhengshi190724s-projects/personal-blog
+- **Deployment**: Cloudflare Pages (via Cloudflare)
 
 ## Architecture
 
 ```
-User Request → Vercel (vercel.json rewrites → index.html) → React Router (client-side) → Page Component
+User Request → Cloudflare Pages (static file serving) → React Router (client-side) → Page Component
 ```
 
 - SPA with client-side routing via `react-router-dom` v6
-- `vercel.json` rewrites all paths to `index.html` — essential for SPA, without it sub-routes return 404
+- Cloudflare Pages serves `index.html` for all routes by default — no extra config needed for SPA
 - No backend/server — fully static build
 
 ### Data Flow
@@ -64,9 +64,9 @@ Runtime:
 - Only React Context used for theme (cross-component)
 - Post data is module-level cache, never changes at runtime
 
-### 5. SPA rewrite rule in vercel.json
-- **Why**: Without it, direct access to `/post/xxx` returns 404
-- **Where**: `vercel.json` — `{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }`
+### 5. Deployment to Cloudflare Pages
+- Deployed via Cloudflare, automatically builds from Git repository on push
+- SPA routing handled natively — no `_redirects` or rewrites config needed (Cloudflare Pages defaults to serving `index.html` for unmatched routes)
 
 ## File Map
 
@@ -77,7 +77,7 @@ Runtime:
 | `src/App.jsx` | Route definitions (/, /post/:slug, /tag/:tag) |
 | `src/index.css` | CSS reset, theme variables, dark mode, highlight.js overrides |
 | `vite.config.js` | Vite config, `assetsInclude: ['**/*.md']` |
-| `vercel.json` | SPA rewrites for Vercel deployment |
+| `vercel.json` | Legacy: SPA rewrites for Vercel deployment (no longer primary) |
 
 ### Data Layer
 | File | Purpose |
@@ -117,18 +117,17 @@ Runtime:
 - [x] 3 sample posts with code highlighting
 - [x] Dark mode with localStorage persistence
 - [x] Responsive design (mobile / tablet / desktop)
-- [x] Vercel deployment with custom domain alias
-- [x] SPA rewrite fix (vercel.json)
+- [x] Cloudflare Pages deployment at https://personal-blog-ot6.pages.dev
+- [x] Vercel deployment (legacy, still active at vercel.app)
 
 ## TODO / Future
-- [ ] Complete Vercel Git auto-deploy (connect GitHub repo in Vercel dashboard)
-- [ ] Fix git push SSL issue (corporate network proxy)
 - [ ] Add more content posts
 - [ ] Consider code-splitting for highlight.js (currently ~514KB bundle)
 - [ ] Add RSS feed
 - [ ] Add SEO meta tags per post
 - [ ] Add pagination for post list (if posts grow beyond ~20)
-- [ ] Custom domain setup
+- [ ] Post search functionality
+- [ ] Sitemap.xml generation
 
 ## Commands
 
@@ -136,7 +135,6 @@ Runtime:
 npm run dev          # Start dev server at localhost:5173
 npm run build        # Production build to dist/
 npm run preview      # Preview production build
-npx vercel --prod    # Deploy to Vercel (requires token)
 ```
 
 ## Adding a New Post
@@ -153,4 +151,4 @@ excerpt: "Optional excerpt. Falls back to first 200 chars of content."
 Post content in Markdown...
 ```
 
-Then deploy: `npx vercel --prod --yes`
+Then `git push` — Cloudflare Pages auto-deploys from the Git repository.
