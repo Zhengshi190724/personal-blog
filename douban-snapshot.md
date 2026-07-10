@@ -1,0 +1,299 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - link "登录/注册" [ref=e5] [cursor=pointer]:
+      - /url: https://accounts.douban.com/passport/login?source=group
+    - link "下载豆瓣客户端" [ref=e7] [cursor=pointer]:
+      - /url: https://www.douban.com/doubanapp/app?channel=top-nav
+    - list [ref=e9]:
+      - listitem [ref=e10]:
+        - link "豆瓣" [ref=e11] [cursor=pointer]:
+          - /url: https://www.douban.com
+      - listitem [ref=e12]:
+        - link "读书" [ref=e13] [cursor=pointer]:
+          - /url: https://book.douban.com
+      - listitem [ref=e14]:
+        - link "电影" [ref=e15] [cursor=pointer]:
+          - /url: https://movie.douban.com
+      - listitem [ref=e16]:
+        - link "音乐" [ref=e17] [cursor=pointer]:
+          - /url: https://music.douban.com
+      - listitem [ref=e18]:
+        - link "播客" [ref=e19] [cursor=pointer]:
+          - /url: https://www.douban.com/podcast/
+      - listitem [ref=e20]:
+        - link "同城" [ref=e21] [cursor=pointer]:
+          - /url: https://www.douban.com/location
+      - listitem [ref=e22]:
+        - link "小组" [ref=e23] [cursor=pointer]:
+          - /url: https://www.douban.com/group
+      - listitem [ref=e24]:
+        - link "阅读" [ref=e25] [cursor=pointer]:
+          - /url: https://read.douban.com/?dcs=top-nav&dcm=douban
+      - listitem [ref=e26]:
+        - link "FM" [ref=e27] [cursor=pointer]:
+          - /url: https://fm.douban.com/?from_=shire_top_nav
+      - listitem [ref=e28]:
+        - link "时间" [ref=e29] [cursor=pointer]:
+          - /url: https://time.douban.com/?dt_time_source=douban-web_top_nav
+      - listitem [ref=e30]:
+        - link "豆品" [ref=e31] [cursor=pointer]:
+          - /url: https://market.douban.com/?utm_campaign=douban_top_nav&utm_source=douban&utm_medium=pc_web
+  - generic [ref=e34]:
+    - link "豆瓣小组" [ref=e36] [cursor=pointer]:
+      - /url: https://www.douban.com/group/
+    - list [ref=e38]:
+      - listitem [ref=e39]:
+        - link "讨论精选" [ref=e40] [cursor=pointer]:
+          - /url: https://www.douban.com/group/explore
+      - listitem [ref=e41]:
+        - link "热门小组" [ref=e42] [cursor=pointer]:
+          - /url: https://www.douban.com/group/explore/hot_groups
+    - group "搜索：" [ref=e45]:
+      - textbox "小组、讨论" [ref=e47]
+      - button "搜索" [ref=e49] [cursor=pointer]
+  - generic [ref=e50]:
+    - generic [ref=e52]:
+      - generic [ref=e53]:
+        - heading "中文&翻译｜我在一个小镇发现了一个录像带租赁店 那盘录像带里的内容毁了我的家" [level=1] [ref=e54]: 中文&翻译｜我在一个小镇发现了一个录像带租赁店 那盘录像带里的内容毁了我的家
+        - generic [ref=e55]:
+          - link "Toska" [ref=e57] [cursor=pointer]:
+            - /url: https://www.douban.com/people/211385335/
+            - img "Toska" [ref=e58]
+          - generic [ref=e59]:
+            - heading "Toska 2026-05-13 02:15:04 已编辑 内蒙古" [level=3] [ref=e60]:
+              - link "Toska" [ref=e62] [cursor=pointer]:
+                - /url: https://www.douban.com/people/211385335/
+              - generic [ref=e63]:
+                - generic [ref=e64]: 2026-05-13 02:15:04
+                - generic [ref=e65]: 已编辑
+                - generic [ref=e66]: 内蒙古
+            - generic [ref=e69]:
+              - paragraph [ref=e70]:
+                - text: I found a video rental store in a small town. What was on the tape shattered my family 作者：Thomas Ian Steele 译：Toska 原作地址：
+                - link "https://www.reddit.com/r/nosleep/s/YByR2D1aPs" [ref=e71] [cursor=pointer]:
+                  - /url: https://www.douban.com/link2/?url=https%3A%2F%2Fwww.reddit.com%2Fr%2Fnosleep%2Fs%2FYByR2D1aPs&link2key=99253dace0
+              - img [ref=e74]
+              - img [ref=e77]
+              - img [ref=e80]
+              - img [ref=e83]
+              - img [ref=e86]
+              - img [ref=e89]
+              - img [ref=e92]
+              - img [ref=e95]
+              - img [ref=e98]
+              - img [ref=e101]
+              - img [ref=e104]
+              - img [ref=e107]
+              - img [ref=e110]
+              - img [ref=e113]
+              - img [ref=e116]
+              - img [ref=e119]
+              - img [ref=e122]
+              - img [ref=e125]
+          - link "赞 11" [ref=e128] [cursor=pointer]:
+            - /url: https://www.douban.com/accounts/register?reason=like
+        - generic [ref=e129]:
+          - link "回复" [ref=e130] [cursor=pointer]:
+            - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1#sep
+          - link "转发" [ref=e131] [cursor=pointer]:
+            - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1&type=rec#sep
+          - link "赞" [ref=e132] [cursor=pointer]:
+            - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1&type=like#sep
+          - link "收藏" [ref=e133] [cursor=pointer]:
+            - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1&type=collect#sep
+          - link "只看楼主" [ref=e135] [cursor=pointer]:
+            - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1&author=1#sep
+        - list [ref=e136]:
+          - listitem [ref=e137]:
+            - link "美冷淡的像月亮" [ref=e139] [cursor=pointer]:
+              - /url: https://www.douban.com/people/66137850/
+              - img "美冷淡的像月亮" [ref=e140]
+            - generic [ref=e141]:
+              - heading "美冷淡的像月亮 2026-05-13 17:07:33 北京" [level=4] [ref=e143]:
+                - link "美冷淡的像月亮" [ref=e144] [cursor=pointer]:
+                  - /url: https://www.douban.com/people/66137850/
+                - text: 2026-05-13 17:07:33 北京
+              - paragraph [ref=e147]: 真感人啊
+              - generic [ref=e148]:
+                - link "赞 (2)" [ref=e149] [cursor=pointer]:
+                  - /url: javascript:void(0);
+                - link "回复" [ref=e150] [cursor=pointer]:
+                  - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1&cid=6515699847#last
+          - listitem [ref=e151]:
+            - link "Toska" [ref=e153] [cursor=pointer]:
+              - /url: https://www.douban.com/people/211385335/
+              - img "Toska" [ref=e154]
+            - generic [ref=e155]:
+              - heading "Toska 楼主 2026-05-13 17:16:03 内蒙古" [level=4] [ref=e157]:
+                - link "Toska" [ref=e158] [cursor=pointer]:
+                  - /url: https://www.douban.com/people/211385335/
+                - generic [ref=e159]: 楼主
+                - text: 2026-05-13 17:16:03 内蒙古
+              - generic [ref=e161]:
+                - text: 真感人啊
+                - link:
+                  - /url: javascript:void(0);
+                - link "美冷淡的像月亮" [ref=e163] [cursor=pointer]:
+                  - /url: https://www.douban.com/people/66137850/
+              - paragraph [ref=e166]: 善良的迈克尔的亡灵T_T
+              - generic [ref=e167]:
+                - link "赞 (1)" [ref=e168] [cursor=pointer]:
+                  - /url: javascript:void(0);
+                - link "回复" [ref=e169] [cursor=pointer]:
+                  - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1&cid=6515713604#last
+          - listitem [ref=e170]:
+            - link "嘉樂西" [ref=e172] [cursor=pointer]:
+              - /url: https://www.douban.com/people/129839153/
+              - img "嘉樂西" [ref=e173]
+            - generic [ref=e174]:
+              - heading "嘉樂西 2026-05-13 21:10:29 广东" [level=4] [ref=e176]:
+                - link "嘉樂西" [ref=e177] [cursor=pointer]:
+                  - /url: https://www.douban.com/people/129839153/
+                - text: 2026-05-13 21:10:29 广东
+              - paragraph [ref=e180]: 很温馨的故事啊，外国人讲故事总是那么多留白，搞得有时候我真是读不懂他们的感情
+              - generic [ref=e181]:
+                - link "赞 (1)" [ref=e182] [cursor=pointer]:
+                  - /url: javascript:void(0);
+                - link "回复" [ref=e183] [cursor=pointer]:
+                  - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1&cid=6516089272#last
+        - heading "你的回复" [level=2] [ref=e184]
+        - generic [ref=e185]:
+          - text: 回复请先
+          - link "登录" [ref=e186] [cursor=pointer]:
+            - /url: /accounts/register?reason=discuss
+          - text: ", 或"
+          - link "注册" [ref=e187] [cursor=pointer]:
+            - /url: /accounts/register?reason=discuss
+        - generic [ref=e189]:
+          - textbox [ref=e190]
+          - button "发送" [ref=e192]
+      - generic [ref=e193]:
+        - generic [ref=e194]:
+          - generic [ref=e196]:
+            - link [ref=e198] [cursor=pointer]:
+              - /url: https://www.douban.com/group/713925/?ref=sidebar
+              - img [ref=e199]
+            - link "Reddit恐怖故事" [ref=e202] [cursor=pointer]:
+              - /url: https://www.douban.com/group/713925/?ref=sidebar
+          - generic [ref=e204]:
+            - generic [ref=e205]: 192416 人聚集在这个小组
+            - link "加入小组" [ref=e206] [cursor=pointer]:
+              - /url: "#"
+        - generic [ref=e207]:
+          - heading "相关内容推荐" [level=2] [ref=e208]
+          - list [ref=e210]:
+            - listitem [ref=e211]:
+              - link "中文&翻译｜【中篇】百年洪灾" [ref=e212] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/285705104/?_spm_id=MjM5Mzk4NzM5
+            - listitem [ref=e213]:
+              - link "爱听真实灵异播客的哥哥进。。" [ref=e214] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/296240791/?_spm_id=MTQyNzI5MTc1
+              - link "(火花四射观察室小组)" [ref=e216] [cursor=pointer]:
+                - /url: https://www.douban.com/group/661193/
+            - listitem [ref=e217]:
+              - link "安利与攻略｜【英文互动小说安利汇总】Choice of Games/Hoste..." [ref=e218] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/256829301/?_spm_id=MTM2NzcyMzAz
+              - link "(女性玩家联合会小组)" [ref=e220] [cursor=pointer]:
+                - /url: https://www.douban.com/group/690445/
+            - listitem [ref=e221]:
+              - link "播客清单｜我喜欢的灵异怪谈&真实案件的中英文播客" [ref=e222] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/299770139/?_spm_id=MTY3MTI0ODU3
+              - link "(每天都在听播客小组)" [ref=e224] [cursor=pointer]:
+                - /url: https://www.douban.com/group/732499/
+            - listitem [ref=e225]:
+              - link "灵异故事｜bilibili上网友关于灵异 事件的回复——第一弹！！！" [ref=e226] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/259429516/?_spm_id=MjM1NTg2Ng
+              - link "(灵异豆瓣小组)" [ref=e228] [cursor=pointer]:
+                - /url: https://www.douban.com/group/10644/
+            - listitem [ref=e229]:
+              - link "分享｜漫谈" [ref=e230] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/286635375/?_spm_id=MjEwMjcxNDgy
+              - link "(豆瓣艰苦留学组小组)" [ref=e232] [cursor=pointer]:
+                - /url: https://www.douban.com/group/707650/
+            - listitem [ref=e233]:
+              - link "资源帖｜一些超好笑的npc的超级沙雕搞笑视频汇总分享" [ref=e234] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/158026887/?_spm_id=MTg5NzQ5NTI1
+              - link "(吃太饱诊疗中心小组)" [ref=e236] [cursor=pointer]:
+                - /url: https://www.douban.com/group/675406/
+            - listitem [ref=e237]:
+              - link "恐惧时刻｜那个我生活了二十年的诡异小区啊（精简版）" [ref=e238] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/300495201/?_spm_id=MTQ2MDU1NzI1
+              - link "(啊这恐惧竟该死的甜美小组)" [ref=e240] [cursor=pointer]:
+                - /url: https://www.douban.com/group/719947/
+        - generic [ref=e241]:
+          - heading "最新讨论 ( 更多 )" [level=2] [ref=e242]:
+            - text: 最新讨论
+            - generic [ref=e243]:
+              - text: (
+              - link "更多" [ref=e244] [cursor=pointer]:
+                - /url: https://www.douban.com/group/713925/#topics
+              - text: )
+          - list [ref=e246]:
+            - listitem [ref=e247]:
+              - link "中文&翻译｜[短篇] 亲爱的日记dear diary" [ref=e248] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/210237978/?_spm_id=MjUyNjg2MzA
+              - text: (盐花)
+            - listitem [ref=e249]:
+              - link "讨论&交流｜求推荐类似《笔友》的恐怖小说" [ref=e250] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/487221245/?_spm_id=Mjc2Mzk4OTM3
+              - text: (Veltro)
+            - listitem [ref=e251]:
+              - link "中文&翻译｜我在一个小镇发现了一个录像带租赁店 那盘录像带..." [ref=e252] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/487190733/?_spm_id=MjExMzg1MzM1
+              - text: (Toska)
+            - listitem [ref=e253]:
+              - link "中文&翻译｜我找了一份“坐班看护”的工作，但他们是来真的，..." [ref=e254] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/486696137/?_spm_id=MjIxNjI1MTY2
+              - text: (瓦瓦)
+            - listitem [ref=e255]:
+              - link "讨论&交流｜找组内的两篇故事" [ref=e256] [cursor=pointer]:
+                - /url: https://www.douban.com/group/topic/486923565/?_spm_id=MjIwNTc0NjQy
+              - text: (无意苦争春)
+        - generic [ref=e258]:
+          - iframe [ref=e259]:
+            - generic [active] [ref=f2e1]:
+              - generic [ref=f2e2]:
+                - link [ref=f2e3] [cursor=pointer]:
+                  - /url: https://erebor.douban.com/redirect/?action=&ad=268537&ad_type=7&al=3&bid=UgGrr-790ag&brand=&chicken=b2f7aa5524de67d395c941c2d6346031&creative=unknown_300x100&crtr=1%3A713925%7C2%3A%E4%BA%BA%E6%96%87%7C2%3A%E7%8C%8E%E5%A5%87%7C2%3A%E9%83%BD%E5%B8%82%E4%BC%A0%E8%AF%B4%7C2%3A%E9%AC%BC%E6%95%85%E4%BA%8B%7C2%3A%E6%80%AA%E8%B0%88%7C3%3A%2Fgroup%2Ftopic%2F487190733%2F%3F_spm_id%3DMjExMzg1MzM1%26_i%3D873807679JJTl1&device=0&disable_creative=false&disable_third=false&high_value=false&hn=nob159&imp_type=2&is_cache=false&is_cmp=false&is_core=false&is_ht=false&is_short=false&item_type=COMPLEMENT&mark=&model=&net=&os=52&osv=NT+10.0&p=0&posid=&priority=2&region=16daf75ba7d9d3ce&sig=df8d9d9b050ab791a7f46e4dc39c862ba0bc9ffe30af58582ed4b72858c0c27f&sigt=hmac&t_mode=&target=aHR0cHM6Ly9zaGlqaS5kb3ViYW4uY29tL2RldGFpbC8xODA5MTEv&ts=__TIMESTAMP__&ts_ms=__TIMESTAMP_MS__&uid=&unit=dale_group_topic_inner_middle&vendor=
+                - generic [ref=f2e4]:
+                  - paragraph [ref=f2e5]:
+                    - link "豆瓣豆品 | “没人知道这朵小玫瑰”" [ref=f2e6] [cursor=pointer]:
+                      - /url: https://erebor.douban.com/redirect/?action=&ad=268537&ad_type=7&al=3&bid=UgGrr-790ag&brand=&chicken=b2f7aa5524de67d395c941c2d6346031&creative=unknown_300x100&crtr=1%3A713925%7C2%3A%E4%BA%BA%E6%96%87%7C2%3A%E7%8C%8E%E5%A5%87%7C2%3A%E9%83%BD%E5%B8%82%E4%BC%A0%E8%AF%B4%7C2%3A%E9%AC%BC%E6%95%85%E4%BA%8B%7C2%3A%E6%80%AA%E8%B0%88%7C3%3A%2Fgroup%2Ftopic%2F487190733%2F%3F_spm_id%3DMjExMzg1MzM1%26_i%3D873807679JJTl1&device=0&disable_creative=false&disable_third=false&high_value=false&hn=nob159&imp_type=2&is_cache=false&is_cmp=false&is_core=false&is_ht=false&is_short=false&item_type=COMPLEMENT&mark=&model=&net=&os=52&osv=NT+10.0&p=0&posid=&priority=2&region=16daf75ba7d9d3ce&sig=df8d9d9b050ab791a7f46e4dc39c862ba0bc9ffe30af58582ed4b72858c0c27f&sigt=hmac&t_mode=&target=aHR0cHM6Ly9zaGlqaS5kb3ViYW4uY29tL2RldGFpbC8xODA5MTEv&ts=__TIMESTAMP__&ts_ms=__TIMESTAMP_MS__&uid=&unit=dale_group_topic_inner_middle&vendor=
+                  - paragraph [ref=f2e7]: 豆瓣豆品
+              - img
+          - generic [ref=e260]: 广告
+    - generic [ref=e261]:
+      - generic [ref=e262]: © 2005-2026 douban.com, all rights reserved 北京豆网科技有限公司
+      - generic [ref=e263]:
+        - link "关于豆瓣" [ref=e264] [cursor=pointer]:
+          - /url: https://www.douban.com/about
+        - text: ·
+        - link "在豆瓣工作" [ref=e265] [cursor=pointer]:
+          - /url: https://www.douban.com/jobs
+        - text: ·
+        - link "联系我们" [ref=e266] [cursor=pointer]:
+          - /url: https://www.douban.com/about?topic=contactus
+        - text: ·
+        - link "法律声明" [ref=e267] [cursor=pointer]:
+          - /url: https://www.douban.com/about/legal
+        - text: ·
+        - link "帮助中心" [ref=e268] [cursor=pointer]:
+          - /url: https://help.douban.com/group
+        - text: ·
+        - link "移动应用" [ref=e269] [cursor=pointer]:
+          - /url: https://www.douban.com/doubanapp/
+  - generic [ref=e271]:
+    - paragraph [ref=e272]: 在这里发现跟你一样特别的人，并与之交流...
+    - generic [ref=e273]:
+      - link "注册" [ref=e274] [cursor=pointer]:
+        - /url: ""
+      - link "登录" [ref=e275] [cursor=pointer]:
+        - /url: ""
+    - generic [ref=e276]:
+      - generic [ref=e277]: 第三方登录：
+      - link "QQ" [ref=e278] [cursor=pointer]:
+        - /url: https://www.douban.com/accounts/connect/qq/?from=group&redir=https%3A//www.douban.com/accounts/join_and_redir%3Fgroup_id%3D713925
+      - link "新浪微博" [ref=e279] [cursor=pointer]:
+        - /url: https://www.douban.com/accounts/connect/sina_weibo/?from=group&redir=https%3A//www.douban.com/accounts/join_and_redir%3Fgroup_id%3D713925&fallback=https://www.douban.com/group/713925/
+    - link "×" [ref=e280] [cursor=pointer]:
+      - /url: "#"

@@ -1,0 +1,12 @@
+# 基础依赖
+requests
+
+# OCR 方案A: PaddleOCR (推荐)
+numpy<2
+opencv-python<4.7
+paddlepaddle==2.6.2
+paddleocr==2.7.3
+
+# OCR 方案B: Tesseract (备选，需额外安装Tesseract引擎和中文语言包)
+# pytesseract
+# pillow
