@@ -109,7 +109,7 @@ git diff -- src/content/costas-loop-note.md
 只暂存本次新增或修改的文章：
 
 ```powershell
-git add src/content/costas-loop-note.md
+git add -- src/content/costas-loop-note.md
 ```
 
 创建提交：
@@ -118,6 +118,10 @@ git add src/content/costas-loop-note.md
 git commit -m "Add Costas loop article"
 ```
 
+同步远程更新，防止 push 被拒绝
+```powershell
+git pull --rebase origin master
+```
 将提交推送到 GitHub 的 `master` 分支：
 
 ```powershell
