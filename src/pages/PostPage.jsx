@@ -1,58 +1,154 @@
-import { useParams, Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { motion } from 'motion/react';
+import { ArrowLeft, Clock3, Hash, Link2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import { usePosts } from '../hooks/usePosts.js';
-import 'highlight.js/styles/github.css';
+import SEO from '../components/SEO/SEO.jsx';
+import { siteConfig } from '../config/site.js';
+import { getCategoryByName } from '../config/navigation.js';
+import TableOfContents from '../components/TableOfContents/TableOfContents.jsx';
+import ReadingProgress from '../components/ReadingProgress/ReadingProgress.jsx';
+import ArticleNavigation from '../components/ArticleNavigation/ArticleNavigation.jsx';
+import 'highlight.js/styles/github-dark.css';
 import './PostPage.css';
+
+function rehypeHeadingIds({ headings }) {
+  return (tree) => {
+    let headingIndex = 0;
+
+    const visit = (node) => {
+      if (node.type === 'element' && (node.tagName === 'h2' || node.tagName === 'h3')) {
+        const heading = headings[headingIndex++];
+        if (heading) {
+          node.properties = { ...node.properties, id: heading.id };
+        }
+      }
+      node.children?.forEach(visit);
+    };
+
+    visit(tree);
+  };
+}
 
 export default function PostPage() {
   const { slug } = useParams();
-  const { getPostBySlug } = usePosts();
+  const { getPostBySlug, getAdjacentPosts, getRelatedPosts } = usePosts();
   const post = getPostBySlug(slug);
 
   if (!post) {
     return (
       <div className="post-not-found">
-        <h1>Post Not Found</h1>
-        <p>The post "{slug}" does not exist.</p>
-        <Link to="/">Back to Home</Link>
+        <SEO title={`文章不存在 | ${siteConfig.name}`} path={`/posts/${slug}/`} noindex />
+        <span className="section-eyebrow">404 / Missing note</span>
+        <h1>这篇文章不存在</h1>
+        <p>它可能已被移动，或还没有完成。</p>
+        <Link className="primary-action" to="/posts/"><ArrowLeft size={16} /> 返回文章</Link>
       </div>
     );
   }
 
+  const { previous, next } = getAdjacentPosts(post.slug);
+  const related = getRelatedPosts(post.slug);
+  const category = getCategoryByName(post.category);
+
+  const headingComponents = {
+    h2: ({ node, children, ...props }) => {
+      return (
+        <h2 {...props}>
+          {children}
+          {props.id && <a className="heading-anchor" href={`#${props.id}`} aria-label="复制本节链接"><Link2 size={15} /></a>}
+        </h2>
+      );
+    },
+    h3: ({ node, children, ...props }) => {
+      return (
+        <h3 {...props}>
+          {children}
+          {props.id && <a className="heading-anchor" href={`#${props.id}`} aria-label="复制本节链接"><Link2 size={14} /></a>}
+        </h3>
+      );
+    },
+  };
+
   return (
-    <article className="post">
-      <Link to="/" className="post-back">&larr; Back to Home</Link>
+    <motion.article
+      className="post"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.55 }}
+    >
+      <ReadingProgress slug={post.slug} />
+      <SEO
+        title={`${post.title} | ${siteConfig.name}`}
+        description={post.excerpt}
+        path={`/posts/${post.slug}/`}
+        type="article"
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: post.title,
+          description: post.excerpt,
+          datePublished: post.date,
+          dateModified: post.date,
+          mainEntityOfPage: `${siteConfig.url}/posts/${post.slug}/`,
+          author: { '@type': 'Person', name: siteConfig.author },
+          publisher: { '@type': 'Person', name: siteConfig.author },
+          keywords: post.tags.join(', '),
+        }}
+      />
+      <Link to="/posts/" className="post-back"><ArrowLeft size={15} /> 返回文章列表</Link>
+
       <header className="post-header">
-        <h1 className="post-title">{post.title}</h1>
-        {post.date && (
-          <time className="post-date" dateTime={post.date}>
-            {new Date(post.date).toLocaleDateString('zh-CN', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </time>
-        )}
-        {post.tags.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <span className="section-eyebrow">Field note / {post.date.slice(0, 4)}</span>
+          <h1 className="post-title">{post.title}</h1>
+          <p className="post-deck">{post.excerpt}</p>
+        </motion.div>
+
+        <div className="post-meta-row">
+          {post.date && (
+            <time className="post-date" dateTime={post.date}>
+              {new Date(post.date).toLocaleDateString('zh-CN', {
+                year: 'numeric', month: 'long', day: 'numeric',
+              })}
+            </time>
+          )}
+          <span className="post-reading-time"><Clock3 size={14} /> {post.readingTime} 分钟阅读</span>
+          {category && <Link to={`/categories/${category.slug}/`} className="post-tag">{category.name}</Link>}
           <div className="post-tags">
             {post.tags.map((tag) => (
-              <Link key={tag} to={`/tag/${tag}`} className="post-tag">
-                {tag}
-              </Link>
+              <Link key={tag} to={`/tags/${tag}/`} className="post-tag"><Hash size={12} />{tag}</Link>
             ))}
           </div>
-        )}
+        </div>
       </header>
-      <div className="post-body">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight]}
-        >
-          {post.content}
-        </ReactMarkdown>
+
+      <div className="post-layout">
+        <TableOfContents headings={post.headings} />
+
+        <div className="post-body">
+          <TableOfContents headings={post.headings} mobile />
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[[rehypeHeadingIds, { headings: post.headings }], rehypeHighlight]}
+            components={headingComponents}
+          >
+            {post.content}
+          </ReactMarkdown>
+
+          <footer className="post-endnote">
+            <span className="section-eyebrow">End of note</span>
+            <p>感谢阅读。愿这篇记录能为你的下一次实践提供一点线索。</p>
+          </footer>
+          <ArticleNavigation previous={previous} next={next} related={related} />
+        </div>
       </div>
-    </article>
+    </motion.article>
   );
 }

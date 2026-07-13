@@ -1,0 +1,125 @@
+.article-navigation {
+  margin-top: 54px;
+  padding-top: 42px;
+  border-top: 1px solid var(--color-border);
+}
+
+.article-adjacent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.article-adjacent {
+  position: relative;
+  display: flex;
+  min-height: 132px;
+  padding: 20px;
+  border-radius: var(--radius);
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--color-text) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.article-adjacent:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+}
+
+.article-adjacent > span,
+.article-adjacent > strong {
+  position: relative;
+  z-index: 3;
+}
+
+.article-adjacent > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.article-adjacent > strong {
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.article-adjacent:nth-child(2) {
+  text-align: right;
+}
+
+.article-adjacent:nth-child(2) > span {
+  justify-content: flex-end;
+}
+
+.article-adjacent--empty {
+  min-height: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.related-posts {
+  margin-top: 64px;
+}
+
+.related-posts h2 {
+  margin: 13px 0 24px;
+  font-size: 1.55rem;
+  letter-spacing: 0;
+}
+
+.related-posts__list {
+  border-top: 1px solid var(--color-border);
+}
+
+.related-posts__list > a {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr) auto;
+  min-height: 68px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--color-border);
+  align-items: center;
+  gap: 18px;
+  color: var(--color-text) !important;
+}
+
+.related-posts__list > a > span {
+  color: var(--color-primary);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.related-posts__list > a > strong {
+  font-size: 0.84rem;
+}
+
+.related-posts__list svg {
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.related-posts__list > a:hover svg {
+  color: var(--color-primary);
+  transform: translate(3px, 3px);
+}
+
+@media (max-width: 560px) {
+  .article-adjacent-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .article-adjacent--empty {
+    display: none;
+  }
+
+  .related-posts__list > a {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .related-posts__list > a > span {
+    grid-column: 1 / -1;
+  }
+}

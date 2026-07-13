@@ -2,6 +2,8 @@
 title: "React 18 新特性详解"
 date: "2026-05-11"
 tags: ["react", "javascript", "frontend"]
+category: "技术"
+featured: "false"
 excerpt: "React 18 带来了许多令人兴奋的新特性，包括自动批处理、并发渲染、Suspense 改进等。本文详细解析这些新特性的使用方法和原理。"
 ---
 

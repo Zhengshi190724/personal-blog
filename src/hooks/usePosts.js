@@ -1,9 +1,27 @@
 import { useMemo } from 'react';
-import { getAllPosts, getPostBySlug, getPostsByTag, getAllTags } from '../utils/posts.js';
+import {
+  getAllPosts,
+  getPostBySlug,
+  getPostsByTag,
+  getAllTags,
+  getAdjacentPosts,
+  getRelatedPosts,
+  getPostsByCategory,
+  getFeaturedPosts,
+} from '../utils/posts.js';
 
 export function usePosts() {
   const posts = useMemo(() => getAllPosts(), []);
   const allTags = useMemo(() => getAllTags(), []);
 
-  return { posts, allTags, getPostBySlug, getPostsByTag };
+  return {
+    posts,
+    allTags,
+    getPostBySlug,
+    getPostsByTag,
+    getAdjacentPosts,
+    getRelatedPosts,
+    getPostsByCategory,
+    getFeaturedPosts,
+  };
 }

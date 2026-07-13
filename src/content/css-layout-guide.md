@@ -2,6 +2,8 @@
 title: "CSS 布局完全指南"
 date: "2026-05-12"
 tags: ["css", "frontend", "tutorial"]
+category: "技术"
+featured: "true"
 excerpt: "掌握现代 CSS 布局的核心技术：Flexbox、Grid 和 Container Queries。从基础概念到实际案例，一文掌握响应式布局的精髓。"
 ---
 
