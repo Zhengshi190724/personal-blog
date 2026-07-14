@@ -3,7 +3,11 @@ dist/
 .DS_Store
 *.local
 .playwright-mcp/
+/playwright-report/
+/test-results/
 *.png
+!public/social-card.png
+!public/images/**/*.png
 .vercel
 task_plan.md
 findings.md

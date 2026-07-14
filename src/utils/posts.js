@@ -1,3 +1,5 @@
+import { formatPostErrors, isPublishedPost, validatePost } from '../content/post-schema.js';
+
 const modules = import.meta.glob('../content/*.md', {
   query: '?raw',
   import: 'default',
@@ -48,62 +50,26 @@ function extractHeadings(content) {
   return headings;
 }
 
-function parseFrontmatter(raw) {
-  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
-  if (!match) return { data: {}, content: raw };
-
-  const yamlBlock = match[1];
-  const content = match[2];
-  const data = {};
-
-  for (const line of yamlBlock.split('\n')) {
-    const colonIndex = line.indexOf(':');
-    if (colonIndex === -1) continue;
-
-    const key = line.slice(0, colonIndex).trim();
-    let value = line.slice(colonIndex + 1).trim();
-
-    // Remove surrounding quotes
-    if ((value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    }
-
-    // Parse arrays: [a, b, c]
-    if (value.startsWith('[') && value.endsWith(']')) {
-      value = value.slice(1, -1).split(',').map(s => s.trim().replace(/['"]/g, ''));
-    } else {
-      value = [value];
-    }
-
-    data[key] = value;
-  }
-
-  return { data, content };
-}
-
 function loadPosts() {
   if (_posts) return _posts;
 
   _posts = Object.entries(modules)
     .map(([filepath, raw]) => {
-      const { data, content } = parseFrontmatter(raw);
       const slug = filepath.split('/').pop().replace(/\.md$/, '');
+      const result = validatePost(raw, { slug });
+      if (result.errors.length > 0) {
+        throw new Error(formatPostErrors(filepath, result.errors));
+      }
+
       return {
         slug,
-        title: data.title ? (Array.isArray(data.title) ? data.title[0] : data.title) : slug,
-        date: data.date ? (Array.isArray(data.date) ? data.date[0] : data.date) : '',
-        tags: data.tags || [],
-        category: data.category?.[0] || '工具与工程实践',
-        featured: data.featured?.[0] === 'true',
-        excerpt: data.excerpt
-          ? (Array.isArray(data.excerpt) ? data.excerpt[0] : data.excerpt)
-          : content.replace(/^#.*$/m, '').trim().slice(0, 200) + '...',
-        content,
-        readingTime: Math.max(1, Math.ceil(content.replace(/[#*`>\[\]()_-]/g, '').length / 500)),
-        headings: extractHeadings(content),
+        ...result.metadata,
+        content: result.content,
+        readingTime: Math.max(1, Math.ceil(result.content.replace(/[#*`>\[\]()_-]/g, '').length / 500)),
+        headings: extractHeadings(result.content),
       };
     })
+    .filter(isPublishedPost)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return _posts;
@@ -114,11 +80,11 @@ export function getAllPosts() {
 }
 
 export function getPostBySlug(slug) {
-  return getAllPosts().find((p) => p.slug === slug) || null;
+  return getAllPosts().find((post) => post.slug === slug) || null;
 }
 
 export function getPostsByTag(tag) {
-  return getAllPosts().filter((p) => p.tags.includes(tag));
+  return getAllPosts().filter((post) => post.tags.includes(tag));
 }
 
 export function getPostsByCategory(category) {

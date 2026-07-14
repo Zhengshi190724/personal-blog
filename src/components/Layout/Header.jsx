@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ChevronDown, Menu, Search, X } from 'lucide-react';
 import { categories } from '../../config/navigation.js';
+import { siteConfig } from '../../config/site.js';
 import ThemeToggle from '../ThemeToggle/ThemeToggle.jsx';
 import SearchDialog from '../SearchDialog/SearchDialog.jsx';
 import './Header.css';
@@ -54,9 +55,9 @@ export default function Header() {
     <>
       <motion.header className="header" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: 'easeOut' }}>
         <div className="header-inner liquid-glass">
-          <Link to="/" className="header-brand" aria-label="Shane Blog 首页">
+          <Link to="/" className="header-brand" aria-label={`${siteConfig.name} 首页`}>
             <span className="header-logo" aria-hidden="true" />
-            <span>Shane Blog</span>
+            <span>{siteConfig.name}</span>
           </Link>
 
           <nav className="header-nav" aria-label="主要导航">

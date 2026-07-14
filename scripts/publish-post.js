@@ -88,6 +88,9 @@ try {
   if (validation.errors.length > 0) {
     fail(`文章校验失败：\n- ${validation.errors.join('\n- ')}`);
   }
+  if (validation.metadata.draft) {
+    fail('文章仍是草稿。请将 draft 改为 "false" 后再发布。');
+  }
 
   const entries = statusEntries();
   const { targetChanged, unrelated } = analyzePublicationChanges(entries, target.repoPath);
@@ -103,12 +106,12 @@ try {
     unrelated.forEach((entry) => console.log(`${entry.status} ${entry.path}`));
   }
 
-  console.log(`\n正在检查文章：${validation.data.title}`);
+  console.log(`\n正在检查文章：${validation.metadata.title}`);
   run('npm', ['run', 'build']);
 
   const tracked = git(['ls-files', '--error-unmatch', '--', target.repoPath], { capture: true, allowFailure: true }).status === 0;
   const action = tracked ? 'Update' : 'Add';
-  const commitMessage = `${action} blog post: ${validation.data.title}`;
+  const commitMessage = `${action} blog post: ${validation.metadata.title}`;
   const liveUrl = `${siteConfig.url.replace(/\/$/, '')}/posts/${target.slug}/`;
 
   if (options.dryRun) {

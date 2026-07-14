@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run validate:content && vite build",
     "preview": "vite preview",
     "new-post": "node scripts/new-post.js",
     "publish": "node scripts/publish-post.js",
+    "validate:content": "node scripts/validate-content.js",
+    "test": "node --test scripts/*.test.js",
+    "test:e2e": "playwright test",
     "test:publish": "node --test scripts/post-tools.test.js"
   },
   "dependencies": {
@@ -23,6 +26,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@vitejs/plugin-react": "^4.4.1",
     "vite": "^6.4.1"
   }

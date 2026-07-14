@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Shane Blog</title>
+  <desc id="description">记录 FPGA、数字通信、信号处理、编程实践与生活思考。</desc>
+  <rect width="1200" height="630" fill="#f4f7f8"/>
+  <g fill="none" stroke="#b8c5ca" stroke-width="2" opacity="0.7">
+    <path d="M0 112h178l42 42h160"/>
+    <path d="M0 520h242l48-48h118"/>
+    <path d="M1200 98h-204l-56 56H820"/>
+    <path d="M1200 506h-166l-46-46H820"/>
+    <circle cx="380" cy="154" r="6" fill="#f4f7f8"/>
+    <circle cx="408" cy="472" r="6" fill="#f4f7f8"/>
+    <circle cx="820" cy="154" r="6" fill="#f4f7f8"/>
+    <circle cx="820" cy="460" r="6" fill="#f4f7f8"/>
+  </g>
+  <rect x="72" y="66" width="1056" height="498" rx="16" fill="none" stroke="#111517" stroke-width="2"/>
+  <g transform="translate(112 126) scale(3.2)" fill="#111517">
+    <path fill-rule="evenodd" d="M8 8h48v11L27 45h29v11H8V45l29-26H8V8Zm13 6h18v3H21v-3Zm18 33h13v3H39v-3ZM24.5 39.4l3.2-2.9 2 2.2-3.2 2.9-2-2.2Zm6.5-5.8 9.8-8.8 2 2.2-9.8 8.8-2-2.2Z"/>
+    <circle cx="17" cy="14" r="1.5"/>
+    <circle cx="47" cy="50" r="1.5"/>
+  </g>
+  <circle cx="115" cy="515" r="7" fill="#00a6c7"/>
+  <text x="144" y="526" fill="#34434a" font-family="Arial, sans-serif" font-size="24">BUILD / THINK / SHARE</text>
+  <text x="380" y="278" fill="#111517" font-family="Arial, sans-serif" font-size="74" font-weight="700">Shane Blog</text>
+  <text x="384" y="338" fill="#007f99" font-family="Arial, sans-serif" font-size="30">Code, systems and thoughtful work.</text>
+  <text x="384" y="410" fill="#52636b" font-family="Arial, sans-serif" font-size="25">FPGA · DSP · Digital Communications · Notes</text>
+</svg>

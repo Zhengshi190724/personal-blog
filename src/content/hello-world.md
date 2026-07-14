@@ -4,6 +4,7 @@ date: "2026-05-10"
 tags: ["introduction", "personal"]
 category: "生活"
 featured: "false"
+draft: "false"
 excerpt: "欢迎来到我的个人博客！这是第一篇博文，介绍我自己和这个博客的内容方向。"
 ---
 

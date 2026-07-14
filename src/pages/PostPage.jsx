@@ -85,17 +85,22 @@ export default function PostPage() {
         description={post.excerpt}
         path={`/posts/${post.slug}/`}
         type="article"
+        image={post.cover || siteConfig.socialImage}
+        imageAlt={post.cover ? post.title : siteConfig.socialImageAlt}
+        publishedTime={post.date}
+        modifiedTime={post.updated || post.date}
         schema={{
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
           headline: post.title,
           description: post.excerpt,
           datePublished: post.date,
-          dateModified: post.date,
+          dateModified: post.updated || post.date,
           mainEntityOfPage: `${siteConfig.url}/posts/${post.slug}/`,
           author: { '@type': 'Person', name: siteConfig.author },
           publisher: { '@type': 'Person', name: siteConfig.author },
           keywords: post.tags.join(', '),
+          image: new URL(post.cover || siteConfig.socialImage, siteConfig.url).toString(),
         }}
       />
       <Link to="/posts/" className="post-back"><ArrowLeft size={15} /> 返回文章列表</Link>

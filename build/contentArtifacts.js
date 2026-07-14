@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { formatPostErrors, isPublishedPost, validatePost } from '../src/content/post-schema.js';
 
 function escapeXml(value = '') {
   return String(value)
@@ -10,35 +11,30 @@ function escapeXml(value = '') {
     .replaceAll("'", '&apos;');
 }
 
-function parseValue(value) {
-  const trimmed = value.trim();
-  if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
-    return trimmed
-      .slice(1, -1)
-      .split(',')
-      .map((item) => item.trim().replace(/^['"]|['"]$/g, ''));
-  }
-  return trimmed.replace(/^['"]|['"]$/g, '');
-}
-
-function parsePost(filePath) {
-  const raw = readFileSync(filePath, 'utf8');
-  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
-  const data = {};
-
-  if (match) {
-    match[1].split(/\r?\n/).forEach((line) => {
-      const separator = line.indexOf(':');
-      if (separator === -1) return;
-      data[line.slice(0, separator).trim()] = parseValue(line.slice(separator + 1));
-    });
-  }
-
-  return data;
-}
-
 function absoluteUrl(siteUrl, path = '/') {
   return new URL(path, `${siteUrl.replace(/\/$/, '')}/`).toString();
+}
+
+function loadPosts(contentDir) {
+  const failures = [];
+  const posts = readdirSync(contentDir)
+    .filter((name) => name.endsWith('.md'))
+    .map((name) => {
+      const slug = name.replace(/\.md$/, '');
+      const result = validatePost(readFileSync(resolve(contentDir, name), 'utf8'), { slug });
+      if (result.errors.length > 0) {
+        failures.push(formatPostErrors(`src/content/${name}`, result.errors));
+      }
+      return { slug, ...result.metadata };
+    });
+
+  if (failures.length > 0) {
+    throw new Error(`Content validation failed:\n\n${failures.join('\n\n')}`);
+  }
+
+  return posts
+    .filter(isPublishedPost)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
 export function contentArtifactsPlugin({ siteUrl, siteTitle, description, categories = [] }) {
@@ -46,22 +42,18 @@ export function contentArtifactsPlugin({ siteUrl, siteTitle, description, catego
     name: 'blog-content-artifacts',
     apply: 'build',
     generateBundle() {
-      const contentDir = resolve(process.cwd(), 'src/content');
-      const posts = readdirSync(contentDir)
-        .filter((name) => name.endsWith('.md'))
-        .map((name) => ({
-          ...parsePost(resolve(contentDir, name)),
-          slug: name.replace(/\.md$/, ''),
-        }))
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      const tags = [...new Set(posts.flatMap((post) => post.tags || []))];
+      const posts = loadPosts(resolve(process.cwd(), 'src/content'));
+      const latestModified = posts
+        .map((post) => post.updated || post.date)
+        .sort()
+        .at(-1);
+      const tags = [...new Set(posts.flatMap((post) => post.tags))];
       const sitemapEntries = [
-        { path: '/', lastmod: posts[0]?.date },
-        ...['/posts/', '/archive/', '/about/', '/friends/'].map((path) => ({ path, lastmod: posts[0]?.date })),
-        ...posts.map((post) => ({ path: `/posts/${post.slug}/`, lastmod: post.date })),
-        ...categories.map((category) => ({ path: `/categories/${category.slug}/`, lastmod: posts[0]?.date })),
-        ...tags.map((tag) => ({ path: `/tags/${encodeURIComponent(tag)}/`, lastmod: posts[0]?.date })),
+        { path: '/', lastmod: latestModified },
+        ...['/posts/', '/archive/', '/about/', '/friends/'].map((path) => ({ path, lastmod: latestModified })),
+        ...posts.map((post) => ({ path: `/posts/${post.slug}/`, lastmod: post.updated || post.date })),
+        ...categories.map((category) => ({ path: `/categories/${category.slug}/`, lastmod: latestModified })),
+        ...tags.map((tag) => ({ path: `/tags/${encodeURIComponent(tag)}/`, lastmod: latestModified })),
       ];
 
       const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -86,7 +78,7 @@ ${posts.map((post) => `    <item>
       <guid isPermaLink="true">${escapeXml(absoluteUrl(siteUrl, `/posts/${post.slug}/`))}</guid>
       <pubDate>${new Date(`${post.date}T00:00:00Z`).toUTCString()}</pubDate>
       <description>${escapeXml(post.excerpt)}</description>
-${(post.tags || []).map((tag) => `      <category>${escapeXml(tag)}</category>`).join('\n')}
+${post.tags.map((tag) => `      <category>${escapeXml(tag)}</category>`).join('\n')}
     </item>`).join('\n')}
   </channel>
 </rss>`;

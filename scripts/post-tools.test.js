@@ -5,6 +5,7 @@ import {
   analyzePublicationChanges,
   createPostTemplate,
   formatLocalDate,
+  isPublishedPost,
   parseGitStatus,
   parseFrontmatter,
   resolvePostTarget,
@@ -16,9 +17,11 @@ import {
 const validPost = `---
 title: "FPGA 学习笔记"
 date: "2026-07-14"
+updated: "2026-07-15"
 tags: ["FPGA", "note"]
 category: "技术"
 featured: "false"
+draft: "false"
 excerpt: "记录 FPGA 学习过程。"
 ---
 
@@ -42,7 +45,11 @@ test('parses and validates a complete post', () => {
   const parsed = parseFrontmatter(validPost);
   assert.equal(parsed.data.title, 'FPGA 学习笔记');
   assert.deepEqual(parsed.data.tags, ['FPGA', 'note']);
-  assert.deepEqual(validatePost(validPost).errors, []);
+  const result = validatePost(validPost, { slug: 'fpga-learning-note' });
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.metadata.featured, false);
+  assert.equal(result.metadata.draft, false);
+  assert.equal(result.metadata.updated, '2026-07-15');
 });
 
 test('rejects template placeholders and invalid metadata', () => {
@@ -54,6 +61,33 @@ test('rejects template placeholders and invalid metadata', () => {
   assert.match(errors, /date/);
   assert.match(errors, /category/);
   assert.match(errors, /摘要/);
+});
+
+test('rejects unknown fields, duplicate tags, and invalid update dates', () => {
+  const invalidPost = validPost
+    .replace('updated: "2026-07-15"', 'updated: "2026-07-13"\nauthor: "Shane"')
+    .replace('["FPGA", "note"]', '["FPGA", "fpga"]');
+  const errors = validatePost(invalidPost).errors.join(' ');
+  assert.match(errors, /updated 不能早于 date/);
+  assert.match(errors, /不支持 Frontmatter 字段 author/);
+  assert.match(errors, /重复标签/);
+});
+
+test('normalizes optional cover and series metadata', () => {
+  const extendedPost = validPost.replace(
+    'excerpt: "记录 FPGA 学习过程。"',
+    'excerpt: "记录 FPGA 学习过程。"\ncover: "/images/posts/fpga/cover.webp"\nseries: "FPGA 入门"',
+  );
+  const result = validatePost(extendedPost);
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.metadata.cover, '/images/posts/fpga/cover.webp');
+  assert.equal(result.metadata.series, 'FPGA 入门');
+});
+
+test('excludes drafts from every shared publication pipeline', () => {
+  assert.equal(isPublishedPost({ draft: false }), true);
+  assert.equal(isPublishedPost({ draft: true }), false);
+  assert.equal(isPublishedPost({}), false);
 });
 
 test('resolves posts only inside src/content', () => {
@@ -76,6 +110,7 @@ test('creates a safe template that must be completed before publishing', () => {
 
   const completed = template
     .replace('tags: []', 'tags: ["test"]')
+    .replace('draft: "true"', 'draft: "false"')
     .replace('请填写文章摘要。', '验证发布脚本。')
     .replace('从这里开始编写正文。', '这里是测试正文。');
   assert.deepEqual(validatePost(completed).errors, []);

@@ -1,16 +1,25 @@
-# TODO - Personal Blog
+# TODO - Shane Blog
 
-Deployed at: https://personal-blog-ot6.pages.dev (Cloudflare Pages, auto-deploy on git push)
+Deployed at: `https://personal-blog-ot6.pages.dev`
 
-## Content
-- [ ] Add more blog posts to `src/content/`
-- [ ] Fix `hello-world.md` line 19 has a stray `2` character
+## P0 completed
 
-## Enhancements
-- [ ] Code-split highlight.js (~514KB bundle) — use dynamic import for `rehype-highlight`
-- [ ] Add `<meta>` tags per post for SEO (description, og:title, etc.)
-- [ ] RSS/Atom feed generation
-- [ ] Pagination for post list (if >20 posts)
-- [ ] Post search functionality
-- [ ] Estimated reading time per post
-- [ ] Sitemap.xml generation
+- [x] One-command article creation and publication
+- [x] Strict Frontmatter validation and draft exclusion
+- [x] GitHub Actions quality gate and Cloudflare preview workflow
+- [x] Current site identity, social metadata, manifest, and project documentation
+
+## P1 next
+
+- [ ] Split routes and Markdown content so article bodies do not enter the initial bundle
+- [ ] Load syntax highlighting only on article routes
+- [ ] Add an image pipeline for WebP/AVIF, responsive sizes, and dimensions
+- [ ] Add series navigation and topic learning maps
+- [ ] Enable and document Cloudflare Web Analytics
+- [ ] Generate static per-article HTML metadata
+- [ ] Bind a custom domain and update canonical URLs
+
+## Later
+
+- [ ] Add pagination when the site has roughly 20 posts
+- [ ] Evaluate comments, email subscriptions, PWA support, or a Git-based CMS after reader demand is clear
