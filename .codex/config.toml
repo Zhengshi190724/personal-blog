@@ -2,7 +2,7 @@
 command = "C:/Users/26012/bin/matlab-mcp-core-server-win64.exe"
 args = [
     '--matlab-root=D:\Program Files\MATLAB\R2023b',
-    "--initialize-matlab-on-startup=true",
+    "--initialize-matlab-on-startup=false",
 ]
 
 [mcp_servers.playwright]
