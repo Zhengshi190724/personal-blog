@@ -1,194 +1,212 @@
 ---
-title: "如何发布 Markdown 文章到博客"
+title: "如何一键创建和发布 Markdown 文章"
 date: "2026-07-13"
+updated: "2026-07-14"
 tags: ["Markdown", "Git", "deployment"]
 category: "技术"
 featured: "false"
 draft: "false"
-excerpt: "记录如何将 Markdown 文章同步到 GitHub 并部署到线上博客。"
+excerpt: "介绍如何修改现有博客文章，以及如何创建新的 Markdown 文件并一键提交到 GitHub、部署到 Cloudflare Pages。"
 ---
 
-# 发布 Markdown 文章到博客
+博客已经提供文章创建和发布脚本。日常更新不再需要依次执行 `git add`、`git commit`、`git pull` 和 `git push`，只需要完成文章内容，再运行一条发布命令即可。
 
-这份笔记记录如何将写好的 Markdown 文件添加到博客、同步到 GitHub 仓库，并通过 Cloudflare Pages 部署到线上网站。
+开始前，在 PowerShell 中进入博客工程目录：
 
-## 1. 准备 Markdown 文件
+```powershell
+Set-Location 'D:\26012\document\Claude_Code'
+```
 
-将文章保存到博客项目的内容目录：
+## 第一部分：修改现有文章并更新到线上
+
+修改已经发布的文章时，应继续编辑原来的 Markdown 文件。不要另建同名文件，也不要修改文件名，否则文章网址会随之变化。
+
+### 1. 找到需要修改的文章
+
+所有文章都位于：
 
 ```text
 D:\26012\document\Claude_Code\src\content\
 ```
 
-文件名会成为文章网址的一部分，建议使用简短的英文小写名称，并用连字符连接单词。例如：
+例如，这篇教程对应的文件是：
 
 ```text
-costas-loop-note.md
+src/content/publish-markdown-post.md
 ```
 
-对应的文章网址为：
+文件名去掉 `.md` 后就是文章 slug，因此线上地址为：
 
 ```text
-https://personal-blog-ot6.pages.dev/posts/costas-loop-note/
+https://personal-blog-ot6.pages.dev/posts/publish-markdown-post/
 ```
 
-## 2. 添加文章信息
+### 2. 修改正文和更新时间
 
-每篇文章开头需要包含 Frontmatter，用于设置标题、日期、标签、分类、精选状态和摘要：
+直接编辑正文。如果这次修改改变了文章内容，应更新 Frontmatter 中的 `updated`，但保留原来的 `date`：
 
-```markdown
----
-title: "文章标题"
+```yaml
 date: "2026-07-13"
-tags: ["FPGA", "SystemVerilog", "tutorial"]
-category: "技术"
-featured: "false"
-draft: "false"
-excerpt: "用一两句话概括文章内容，这段文字会显示在文章列表和搜索结果中。"
----
-
-# 文章标题
-
-从这里开始编写正文。
+updated: "2026-07-14"
 ```
 
-当前博客支持以下分类：
+- `date` 表示首次发布日期。
+- `updated` 表示最近一次内容更新时间。
+- 已上线文章应保持 `draft: "false"`。
+
+### 3. 执行发布前检查
+
+发布命令可以接收文章 slug。先使用 `--dry-run` 检查内容：
+
+```powershell
+npm run publish -- publish-markdown-post --dry-run
+```
+
+检查过程会验证 Frontmatter、正文和生产构建，但不会暂存文件、创建 Git 提交或推送到 GitHub。
+
+### 4. 一键更新线上文章
+
+检查通过后执行：
+
+```powershell
+npm run publish -- publish-markdown-post
+```
+
+脚本会自动完成：
+
+1. 校验文章格式和必填字段。
+2. 执行生产构建。
+3. 只暂存当前 Markdown 文件。
+4. 创建文章更新提交。
+5. 同步远程 `master` 分支。
+6. 推送到 GitHub，触发 Cloudflare Pages 部署。
+
+等待部署完成后，刷新原文章地址即可看到更新。浏览器仍显示旧内容时，可以使用 `Ctrl + F5` 强制刷新。
+
+### 5. 发布脚本提示存在无关改动
+
+为避免误提交，发布脚本发现其他未提交文件时会停止。先运行：
+
+```powershell
+git status
+```
+
+应先完成或单独提交其他代码、图片和文档，再重新执行文章发布命令。脚本不会自动暂存无关文件，也不会执行强制推送。
+
+## 第二部分：添加新文章并发布到线上
+
+新文章建议通过模板命令创建。这样可以自动生成合法文件名、日期和完整 Frontmatter，减少遗漏字段导致的构建失败。
+
+### 1. 确定文章 slug、标题和分类
+
+slug 会成为 Markdown 文件名和文章网址。建议只使用小写英文字母、数字和连字符：
+
+```text
+fpga-learning-note
+```
+
+当前支持四个分类：
 
 - `技术`
 - `生活`
 - `娱乐`
 - `杂项`
 
-将 `featured` 设置为 `"true"` 时，文章会出现在首页精选内容中。
+### 2. 创建新文章模板
 
-新建文章默认使用 `draft: "true"`，草稿不会出现在文章列表、搜索、RSS 或 Sitemap 中。发布前将其改为 `draft: "false"`。
-
-## 3. 本地预览
-
-在 PowerShell 中进入项目目录并启动开发服务器：
+执行：
 
 ```powershell
-Set-Location 'D:\26012\document\Claude_Code'
+npm run new-post -- fpga-learning-note --title "FPGA 学习笔记" --category 技术
+```
+
+命令会创建：
+
+```text
+src/content/fpga-learning-note.md
+```
+
+对应的线上地址将是：
+
+```text
+https://personal-blog-ot6.pages.dev/posts/fpga-learning-note/
+```
+
+如果目标文件已经存在，命令会停止，不会覆盖原文章。
+
+### 3. 完成 Frontmatter 和正文
+
+新模板默认是草稿，并包含待填写内容。发布前至少需要完成以下字段：
+
+```yaml
+---
+title: "FPGA 学习笔记"
+date: "2026-07-14"
+updated: "2026-07-14"
+tags: ["FPGA", "learning"]
+category: "技术"
+featured: "false"
+draft: "false"
+excerpt: "记录 FPGA 学习过程中的重点概念、实验和工程经验。"
+---
+```
+
+字段说明：
+
+- `tags` 至少填写一个标签，使用数组格式。
+- `category` 必须属于四个已有分类。
+- `featured: "true"` 会将文章加入首页精选内容。
+- 新模板默认使用 `draft: "true"`；完成文章后必须改为 `"false"` 才能正式发布。
+- `updated`、`cover` 和 `series` 是可选字段。
+- 本地封面路径可以写成 `/images/posts/fpga-learning-note/cover.webp`。
+
+草稿不会出现在文章列表、搜索、归档、RSS 或 Sitemap 中。
+
+### 4. 本地预览
+
+需要检查排版时，启动本地网站：
+
+```powershell
 npm run dev
 ```
 
-打开本地网站：
+然后访问：
 
 ```text
-http://127.0.0.1:5173/
+http://127.0.0.1:5173/posts/fpga-learning-note/
 ```
 
-检查以下内容：
+重点检查标题层级、代码块、表格、图片、文章目录、标签和移动端显示。
 
-- 文章是否出现在首页和文章列表中。
-- 标题、摘要、日期、标签和分类是否正确。
-- Markdown 标题、列表、图片、代码块和表格是否正常显示。
-- 文章目录和上一篇、下一篇导航是否正确。
+### 5. 检查并一键发布
 
-## 4. 执行生产构建
-
-预览没有问题后，执行生产构建：
+先执行无副作用检查：
 
 ```powershell
-npm run build
+npm run publish -- fpga-learning-note --dry-run
 ```
 
-构建成功后，网站文件会生成到 `dist` 目录，同时自动更新：
-
-- `sitemap.xml`
-- `rss.xml`
-- `robots.txt`
-
-`dist` 是本地构建产物，不需要提交到 Git 仓库。
-
-## 5. 提交到 Git 仓库
-
-先查看修改内容：
+检查通过后正式发布：
 
 ```powershell
-git status
-git diff -- src/content/costas-loop-note.md
+npm run publish -- fpga-learning-note
 ```
 
-只暂存本次新增或修改的文章：
-
-```powershell
-git add -- src/content/costas-loop-note.md
-```
-
-创建提交：
-
-```powershell
-git commit -m "Add Costas loop article"
-```
-
-同步远程更新，防止 push 被拒绝
-```powershell
-git pull --rebase origin master
-```
-将提交推送到 GitHub 的 `master` 分支：
-
-```powershell
-git push origin master
-```
-
-如果还修改了图片或网站代码，需要将对应文件一起加入 `git add`，但不要提交密码、访问令牌、`.env` 文件、`node_modules` 或 `dist`。
-
-## 6. 自动部署到线上网站
-
-GitHub 推送成功后，Cloudflare Pages 会自动拉取最新代码并执行生产构建。通常等待片刻后，新文章就会出现在：
+脚本会自动生成类似下面的提交说明：
 
 ```text
-https://personal-blog-ot6.pages.dev/
+Add blog post: FPGA 学习笔记
 ```
 
-也可以直接访问文章地址：
+推送成功后，Cloudflare Pages 会自动构建并部署网站。部署期间旧版本仍可正常访问，等待片刻后再打开新文章地址。
 
-```text
-https://personal-blog-ot6.pages.dev/posts/costas-loop-note/
-```
+### 6. 常见失败原因
 
-如果浏览器仍显示旧内容，可以强制刷新页面：
+- **提示缺少标签或摘要**：补全 `tags` 和 `excerpt`，不要保留模板提示文字。
+- **提示文章仍是草稿**：将 `draft` 改为 `"false"`。
+- **提示分类无效**：只使用 `技术`、`生活`、`娱乐` 或 `杂项`。
+- **提示存在无关文件**：通过 `git status` 检查并先处理其他改动。
+- **线上文章出现 404**：确认 slug 与文件名一致，并等待 Cloudflare Pages 部署完成。
+- **GitHub 推送失败**：保留本地提交，网络恢复后重新执行 `git push origin master`。
 
-```text
-Windows: Ctrl + F5
-```
-
-## 7. 修改已经发布的文章
-
-直接编辑原来的 Markdown 文件，然后重新执行：
-
-```powershell
-npm run build
-git add src/content/costas-loop-note.md
-git commit -m "Update Costas loop article"
-git push origin master
-```
-
-推送后 Cloudflare Pages 会重新部署，线上文章会更新。只修改本地文件但不执行 `git push`，线上网站不会发生变化。
-
-## 8. 常见问题
-
-### 文章没有出现在网站中
-
-确认文件位于 `src/content`，扩展名为 `.md`，并且 Frontmatter 前后都使用三个连字符 `---`。
-
-### 分类页面没有文章
-
-确认 `category` 的值严格使用 `技术`、`生活`、`娱乐` 或 `杂项`，不要添加多余空格。
-
-### 文章地址出现 404
-
-确认网址中的文章名称与 Markdown 文件名一致，并保留末尾的 `/`。如果刚完成推送，请等待部署结束后再刷新。
-
-### Git 推送失败
-
-先检查当前分支和远程仓库：
-
-```powershell
-git branch --show-current
-git remote -v
-```
-
-当前博客应推送到 `origin/master`。如果网络暂时无法连接 GitHub，保留本地提交，网络恢复后重新执行 `git push origin master`。
-
+通过这两条流程，修改旧文章和发布新文章都只需要维护 Markdown 内容，再执行对应的一键发布命令。
