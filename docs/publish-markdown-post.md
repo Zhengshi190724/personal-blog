@@ -2,6 +2,41 @@
 
 这份笔记记录如何将写好的 Markdown 文件添加到博客、同步到 GitHub 仓库，并通过 Cloudflare Pages 部署到线上网站。
 
+## 推荐流程：使用一键发布命令
+
+创建文章模板：
+
+```powershell
+Set-Location 'D:\26012\document\Claude_Code'
+npm run new-post -- fpga-learning-note --title "FPGA 学习笔记" --category 技术
+```
+
+编辑生成的 `src/content/fpga-learning-note.md`，填写标签、摘要和正文。完成后先进行安全检查：
+
+```powershell
+npm run publish -- fpga-learning-note --dry-run
+```
+
+`--dry-run` 会校验文章并执行生产构建，但不会暂存、提交或推送文件。检查通过后正式发布：
+
+```powershell
+npm run publish -- fpga-learning-note
+```
+
+正式发布会自动完成：
+
+1. 校验 Frontmatter 和正文。
+2. 检查是否存在无关的未提交文件。
+3. 执行生产构建。
+4. 只暂存指定文章。
+5. 自动生成 Git 提交说明。
+6. 从 `origin/master` 拉取并变基。
+7. 推送到 GitHub，触发 Cloudflare Pages 部署。
+
+脚本不会执行强制推送。如果存在其他未提交文件，真实发布会停止，避免误提交。
+
+下面保留手动发布流程，供排查问题时使用。
+
 ## 1. 准备 Markdown 文件
 
 将文章保存到博客项目的内容目录：
@@ -112,6 +147,7 @@ git commit -m "Add Costas loop article"
 将提交推送到 GitHub 的 `master` 分支：
 
 ```powershell
+git pull --rebase origin master
 git push origin master
 ```
 
@@ -142,10 +178,8 @@ Windows: Ctrl + F5
 直接编辑原来的 Markdown 文件，然后重新执行：
 
 ```powershell
-npm run build
-git add src/content/costas-loop-note.md
-git commit -m "Update Costas loop article"
-git push origin master
+npm run publish -- costas-loop-note --dry-run
+npm run publish -- costas-loop-note
 ```
 
 推送后 Cloudflare Pages 会重新部署，线上文章会更新。只修改本地文件但不执行 `git push`，线上网站不会发生变化。
@@ -175,3 +209,12 @@ git remote -v
 
 当前博客应推送到 `origin/master`。如果网络暂时无法连接 GitHub，保留本地提交，网络恢复后重新执行 `git push origin master`。
 
+### 一键发布提示存在无关文件
+
+先执行：
+
+```powershell
+git status
+```
+
+将其他工作提交、暂存到 Git stash，或完成后再发布。发布脚本不会自动处理这些无关文件。

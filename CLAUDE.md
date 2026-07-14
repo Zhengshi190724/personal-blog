@@ -135,6 +135,10 @@ Runtime:
 npm run dev          # Start dev server at localhost:5173
 npm run build        # Production build to dist/
 npm run preview      # Preview production build
+npm run new-post -- <slug> --title "Post title" --category 技术
+npm run publish -- <slug> --dry-run
+npm run publish -- <slug>
+npm run test:publish # Test publishing utilities
 ```
 
 ## Adding a New Post
@@ -151,4 +155,11 @@ excerpt: "Optional excerpt. Falls back to first 200 chars of content."
 Post content in Markdown...
 ```
 
-Then `git push` — Cloudflare Pages auto-deploys from the Git repository.
+Recommended workflow:
+
+```bash
+npm run publish -- <slug> --dry-run
+npm run publish -- <slug>
+```
+
+The publish command validates and builds the selected post, commits only that file, rebases onto `origin/master`, and pushes to trigger the Cloudflare Pages deployment.
