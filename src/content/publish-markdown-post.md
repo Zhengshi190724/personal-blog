@@ -1,7 +1,7 @@
 ---
 title: "如何一键创建和发布 Markdown 文章"
 date: "2026-07-13"
-updated: "2026-07-14"
+updated: "2026-07-16"
 tags: ["Markdown", "Git", "deployment"]
 category: "技术"
 featured: "false"
@@ -210,3 +210,67 @@ Add blog post: FPGA 学习笔记
 - **GitHub 推送失败**：保留本地提交，网络恢复后重新执行 `git push origin master`。
 
 通过这两条流程，修改旧文章和发布新文章都只需要维护 Markdown 内容，再执行对应的一键发布命令。
+
+## 第三部分：新增图片到文章并线上部署
+
+后续新增图片时，建议按文章建立独立文件夹，并与 Markdown 文件一起提交。
+
+### 1.存放图片
+
+例如文章名称为`sv_learning_note`
+
+```text
+D:\26012\document\Claude_Code\public\images\posts\sv_learning_note\example.png
+```
+
+### 2.在 Markdown 中引用图片
+
+```markdown
+![example](/images/posts/sv_learning_note/example.png)
+```
+
+请勿使用
+```markdown
+![错误示例](D:\26012\document\Claude_Code\public\images\...)
+```
+
+同时确保扩展名和大小写与实际文件完全一致，例如`.png`不能写成`.jpg`。
+
+### 3.提交并推送
+
+在PowerShell中执行：
+
+```powershell
+Set-Location "D:\26012\document\Claude_Code"
+
+git status
+
+git add "public/images/posts/sv_learning_note/example.png"
+git add "src/content/sv_learning_note.md"
+
+git commit -m "Add images to SystemVerilog learning note"
+git push origin master
+```
+
+如果需要提交该图片文件夹中的所有新增图片：
+
+```powershell
+git add "public/images/posts/sv_learning_note"
+git add "src/content/sv_learning_note.md"
+
+git commit -m "Update SystemVerilog article images"
+git push origin master
+```
+
+推送成功后，Cloudflare Pages 会自动部署。线上图片地址为：
+```text
+https://personal-blog-ot6.pages.dev/images/posts/sv_learning_note/example.png
+```
+
+提交前可以执行以下检查：
+```powershell
+npm run validate:content
+npm run build
+```
+
+注意使用指定路径执行`git add`，避免`git add.`意外提交`.history`等无关文件。
