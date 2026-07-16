@@ -5,6 +5,7 @@ import { usePosts } from '../hooks/usePosts.js';
 import SEO from '../components/SEO/SEO.jsx';
 import { siteConfig } from '../config/site.js';
 import PostCard from '../components/PostCard/PostCard.jsx';
+import TypewriterText from '../components/TypewriterText/TypewriterText.jsx';
 import { categories } from '../config/navigation.js';
 import './HomePage.css';
 import './IndexPages.css';
@@ -38,7 +39,7 @@ export default function HomePage() {
           {...reveal}
           transition={{ duration: 0.7, delay: 0.18 }}
         >
-          Personal field notes · 2026
+          个人Blog · 2026
         </motion.div>
 
         <motion.h1
@@ -47,7 +48,7 @@ export default function HomePage() {
           {...reveal}
           transition={{ duration: 0.8, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
         >
-          Welcome to Shane&apos;s space!
+          欢迎来到我的空间！
         </motion.h1>
 
         <motion.p
@@ -55,7 +56,7 @@ export default function HomePage() {
           {...reveal}
           transition={{ duration: 0.7, delay: 0.5 }}
         >
-          Thank you for your visit！May all your endeavors go smoothly！
+          <TypewriterText />
         </motion.p>
 
         <motion.div
@@ -94,7 +95,7 @@ export default function HomePage() {
       >
         <span><Braces size={14} /> BUILD / THINK / SHARE</span>
         <span className="signal-strip__center">正在持续更新</span>
-        <span><span className="signal-dot" /> SHANGHAI · CN</span>
+        <span><span className="signal-dot" /> SHANNXI · CN</span>
       </motion.div>
 
       <section id="latest" className="writing-section home-section" aria-labelledby="writing-title">

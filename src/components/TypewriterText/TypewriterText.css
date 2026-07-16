@@ -1,0 +1,45 @@
+.typewriter {
+  display: inline-flex;
+  width: min(100%, 28em);
+  min-height: 1.75em;
+  align-items: center;
+  justify-content: center;
+}
+
+.typewriter__visual {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.typewriter__caret {
+  width: 2px;
+  height: 1.15em;
+  margin-left: 3px;
+  background: currentColor;
+  animation: typewriter-caret 0.8s steps(1, end) infinite;
+}
+
+.typewriter__accessible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@keyframes typewriter-caret {
+  0%, 45% { opacity: 1; }
+  46%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typewriter__caret {
+    display: none;
+    animation: none;
+  }
+}

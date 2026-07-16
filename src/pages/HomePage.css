@@ -51,6 +51,10 @@
   text-align: center;
 }
 
+.home-hero__eyebrow {
+  text-transform: none;
+}
+
 .home-hero__title {
   margin-top: 20px;
   color: var(--color-text);
