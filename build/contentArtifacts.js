@@ -1,6 +1,7 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { formatPostErrors, isPublishedPost, validatePost } from '../src/content/post-schema.js';
+import { loadPostRecords } from './postData.js';
+import { createStaticPostHtml } from './staticPostHtml.js';
 
 function escapeXml(value = '') {
   return String(value)
@@ -15,34 +16,38 @@ function absoluteUrl(siteUrl, path = '/') {
   return new URL(path, `${siteUrl.replace(/\/$/, '')}/`).toString();
 }
 
-function loadPosts(contentDir) {
-  const failures = [];
-  const posts = readdirSync(contentDir)
-    .filter((name) => name.endsWith('.md'))
-    .map((name) => {
-      const slug = name.replace(/\.md$/, '');
-      const result = validatePost(readFileSync(resolve(contentDir, name), 'utf8'), { slug });
-      if (result.errors.length > 0) {
-        failures.push(formatPostErrors(`src/content/${name}`, result.errors));
-      }
-      return { slug, ...result.metadata };
-    });
+export function contentArtifactsPlugin({
+  siteUrl,
+  siteTitle,
+  siteName,
+  description,
+  author,
+  socialImage,
+  socialImageAlt,
+  categories = [],
+  contentMaps = [],
+}) {
+  let contentDirectory = resolve(process.cwd(), 'src/content');
+  let outputDirectory = resolve(process.cwd(), 'dist');
 
-  if (failures.length > 0) {
-    throw new Error(`Content validation failed:\n\n${failures.join('\n\n')}`);
-  }
-
-  return posts
-    .filter(isPublishedPost)
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
-}
-
-export function contentArtifactsPlugin({ siteUrl, siteTitle, description, categories = [] }) {
   return {
     name: 'blog-content-artifacts',
     apply: 'build',
+    configResolved(config) {
+      contentDirectory = resolve(config.root, 'src/content');
+      outputDirectory = resolve(config.root, config.build.outDir);
+    },
+    transformIndexHtml(html) {
+      const homepageUrl = absoluteUrl(siteUrl, '/');
+      const socialImageUrl = absoluteUrl(siteUrl, socialImage);
+      return html
+        .replace(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${homepageUrl}" />`)
+        .replace(/<meta\s+property="og:url"[^>]*>/i, `<meta property="og:url" content="${homepageUrl}" />`)
+        .replace(/<meta\s+property="og:image"[^>]*>/i, `<meta property="og:image" content="${socialImageUrl}" />`)
+        .replace(/<meta\s+name="twitter:image"[^>]*>/i, `<meta name="twitter:image" content="${socialImageUrl}" />`);
+    },
     generateBundle() {
-      const posts = loadPosts(resolve(process.cwd(), 'src/content'));
+      const posts = loadPostRecords(contentDirectory);
       const latestModified = posts
         .map((post) => post.updated || post.date)
         .sort()
@@ -53,6 +58,7 @@ export function contentArtifactsPlugin({ siteUrl, siteTitle, description, catego
         ...['/posts/', '/archive/', '/about/', '/friends/'].map((path) => ({ path, lastmod: latestModified })),
         ...posts.map((post) => ({ path: `/posts/${post.slug}/`, lastmod: post.updated || post.date })),
         ...categories.map((category) => ({ path: `/categories/${category.slug}/`, lastmod: latestModified })),
+        ...contentMaps.map((contentMap) => ({ path: `/maps/${contentMap.slug}/`, lastmod: latestModified })),
         ...tags.map((tag) => ({ path: `/tags/${encodeURIComponent(tag)}/`, lastmod: latestModified })),
       ];
 
@@ -88,6 +94,28 @@ ${post.tags.map((tag) => `      <category>${escapeXml(tag)}</category>`).join('\
       this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap });
       this.emitFile({ type: 'asset', fileName: 'rss.xml', source: rss });
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots });
+
+    },
+    closeBundle() {
+      const indexPath = resolve(outputDirectory, 'index.html');
+      const indexHtml = readFileSync(indexPath, 'utf8');
+      const posts = loadPostRecords(contentDirectory, { includeContent: true });
+
+      posts.forEach((post) => {
+        const articleDirectory = resolve(outputDirectory, 'posts', post.slug);
+        mkdirSync(articleDirectory, { recursive: true });
+        writeFileSync(
+          resolve(articleDirectory, 'index.html'),
+          createStaticPostHtml(indexHtml, post, {
+            siteUrl,
+            siteName,
+            author,
+            socialImage,
+            socialImageAlt,
+          }),
+          'utf8',
+        );
+      });
     },
   };
 }

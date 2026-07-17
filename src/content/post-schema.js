@@ -3,7 +3,7 @@ export const PLACEHOLDER_EXCERPT = '请填写文章摘要。';
 export const PLACEHOLDER_BODY = '从这里开始编写正文。';
 
 const REQUIRED_FIELDS = ['title', 'date', 'tags', 'category', 'featured', 'draft', 'excerpt'];
-const OPTIONAL_FIELDS = ['updated', 'cover', 'series'];
+const OPTIONAL_FIELDS = ['updated', 'cover', 'series', 'seriesOrder'];
 const ALLOWED_FIELDS = new Set([...REQUIRED_FIELDS, ...OPTIONAL_FIELDS]);
 
 export function validateSlug(slug) {
@@ -112,6 +112,7 @@ function normalizeMetadata(data) {
     excerpt: typeof data.excerpt === 'string' ? data.excerpt.trim() : '',
     cover: typeof data.cover === 'string' ? data.cover.trim() : '',
     series: typeof data.series === 'string' ? data.series.trim() : '',
+    seriesOrder: /^\d+$/.test(data.seriesOrder || '') ? Number(data.seriesOrder) : 0,
   };
 }
 
@@ -179,6 +180,15 @@ export function validatePost(raw, { slug = '' } = {}) {
     }
   }
   if (Object.hasOwn(data, 'series') && !presentString(data.series)) errors.push('series 存在时不能为空。');
+  if (Object.hasOwn(data, 'seriesOrder') && !/^[1-9]\d*$/.test(data.seriesOrder || '')) {
+    errors.push('seriesOrder 必须是从 1 开始的正整数。');
+  }
+  if (Object.hasOwn(data, 'series') && !Object.hasOwn(data, 'seriesOrder')) {
+    errors.push('设置 series 时必须同时设置 seriesOrder。');
+  }
+  if (Object.hasOwn(data, 'seriesOrder') && !Object.hasOwn(data, 'series')) {
+    errors.push('设置 seriesOrder 时必须同时设置 series。');
+  }
 
   const body = content.trim();
   if (!body) errors.push('文章正文不能为空。');

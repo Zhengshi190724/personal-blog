@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { trackArticleCompletion } from '../../utils/analytics.js';
+import { recordArticleCompletion } from '../../utils/readingHistory.js';
 import './ReadingProgress.css';
 
 export default function ReadingProgress({ articleSelector = '.post', slug }) {
@@ -19,7 +19,7 @@ export default function ReadingProgress({ articleSelector = '.post', slug }) {
       setProgress(nextProgress);
       if (slug && !completionRecorded && nextProgress >= 0.9 && Date.now() - startedAt >= 10000) {
         completionRecorded = true;
-        trackArticleCompletion(slug);
+        recordArticleCompletion(slug);
       }
     };
 

@@ -15,6 +15,38 @@ excerpt: "从零开始的 SystemVerilog 学习笔记。"
 
 ## 1、SV概括
 
+### 数字IC验证的目的
+
+>简单来说，就是**寻找漏洞**，确保设备能够成功地完成预定的任务、预期的功能可以完整的实现!
+
+### IC验证的流程
+
+```mermaid
+%%{init: {
+  "themeVariables": {
+    "fontSize": "18px"
+  },
+  "flowchart": {
+    "wrappingWidth": 1000,
+    "padding": 8,
+    "rankSpacing": 35
+  }
+}}%%
+flowchart TD
+    A["阅读 spec 文档（信号含义、时序、寄存器、功能）"]
+    B["提取功能点，制定验证计划（Excel）"]
+    C["搭建验证平台（SC 和 UVM）"]
+    D["编写测试激励（sequence / case，跑回归）"]
+    E["Debug（log 和 Verdi 波形）"]
+    F["收集覆盖率（代码覆盖率和功能覆盖率）"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+```
+
 ### 数字IC验证的评价标准
 
 >**第一准则**:能够100%确保被测对象（DUT）符合Spec.规定的功能及其性能，即验证的完备性；

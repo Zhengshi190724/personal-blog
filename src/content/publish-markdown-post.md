@@ -7,6 +7,8 @@ category: "技术"
 featured: "false"
 draft: "false"
 excerpt: "介绍如何修改现有博客文章，以及如何创建新的 Markdown 文件并一键提交到 GitHub、部署到 Cloudflare Pages。"
+series: "Markdown 写作与发布"
+seriesOrder: "2"
 ---
 
 博客已经提供文章创建和发布脚本。日常更新不再需要依次执行 `git add`、`git commit`、`git pull` 和 `git push`，只需要完成文章内容，再运行一条发布命令即可。

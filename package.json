@@ -4,12 +4,18 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "predev": "npm run prepare:media",
     "dev": "vite",
-    "build": "npm run validate:content && vite build",
+    "build": "npm run validate:content && npm run prepare:media && npm run render:social-card && vite build && npm run check:bundle",
     "preview": "vite preview",
     "new-post": "node scripts/new-post.js",
     "publish": "node scripts/publish-post.js",
     "validate:content": "node scripts/validate-content.js",
+    "check:bundle": "node scripts/check-bundle-size.js",
+    "capture:poster": "node scripts/capture-poster.js",
+    "prepare:media": "node scripts/prepare-media.js",
+    "render:social-card": "node scripts/render-social-card.js",
+    "review:month": "node scripts/create-monthly-review.js",
     "test": "node --test scripts/*.test.js",
     "test:e2e": "playwright test",
     "test:publish": "node --test scripts/post-tools.test.js"
@@ -28,6 +34,7 @@
   "devDependencies": {
     "@playwright/test": "^1.61.1",
     "@vitejs/plugin-react": "^4.4.1",
+    "sharp": "^0.35.3",
     "vite": "^6.4.1"
   }
 }

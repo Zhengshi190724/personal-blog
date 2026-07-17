@@ -47,6 +47,8 @@ category: ${yamlString(category)}
 featured: "false"
 draft: "true"
 excerpt: ${yamlString(PLACEHOLDER_EXCERPT)}
+# series: "可选系列名称"
+# seriesOrder: "1"
 ---
 
 # ${title}

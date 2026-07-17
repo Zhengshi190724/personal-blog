@@ -8,6 +8,9 @@ import {
   getRelatedPosts,
   getPostsByCategory,
   getFeaturedPosts,
+  loadAllPostContents,
+  loadPostBySlug,
+  getPostsBySeries,
 } from '../utils/posts.js';
 
 export function usePosts() {
@@ -23,5 +26,8 @@ export function usePosts() {
     getRelatedPosts,
     getPostsByCategory,
     getFeaturedPosts,
+    loadAllPostContents,
+    loadPostBySlug,
+    getPostsBySeries,
   };
 }

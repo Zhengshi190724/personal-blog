@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, Clock3, Hash, Link2 } from 'lucide-react';
@@ -11,6 +12,9 @@ import { getCategoryByName } from '../config/navigation.js';
 import TableOfContents from '../components/TableOfContents/TableOfContents.jsx';
 import ReadingProgress from '../components/ReadingProgress/ReadingProgress.jsx';
 import ArticleNavigation from '../components/ArticleNavigation/ArticleNavigation.jsx';
+import ResponsiveImage from '../components/ResponsiveImage/ResponsiveImage.jsx';
+import SeriesNavigation from '../components/SeriesNavigation/SeriesNavigation.jsx';
+import PostShareActions from '../components/PostShareActions/PostShareActions.jsx';
 import 'highlight.js/styles/github-dark.css';
 import './PostPage.css';
 
@@ -34,8 +38,29 @@ function rehypeHeadingIds({ headings }) {
 
 export default function PostPage() {
   const { slug } = useParams();
-  const { getPostBySlug, getAdjacentPosts, getRelatedPosts } = usePosts();
+  const { getPostBySlug, getAdjacentPosts, getRelatedPosts, getPostsBySeries, loadPostBySlug } = usePosts();
   const post = getPostBySlug(slug);
+  const [content, setContent] = useState('');
+  const [contentError, setContentError] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setContent('');
+    setContentError(false);
+    if (!post) return () => { active = false; };
+
+    loadPostBySlug(post.slug)
+      .then((loadedPost) => {
+        if (active) setContent(loadedPost?.content || '');
+      })
+      .catch(() => {
+        if (active) setContentError(true);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [loadPostBySlug, post]);
 
   if (!post) {
     return (
@@ -52,8 +77,16 @@ export default function PostPage() {
   const { previous, next } = getAdjacentPosts(post.slug);
   const related = getRelatedPosts(post.slug);
   const category = getCategoryByName(post.category);
+  const seriesPosts = getPostsBySeries(post.series);
 
   const headingComponents = {
+    p: ({ node, children, ...props }) => {
+      const onlyImage = node?.children?.length === 1
+        && node.children[0].type === 'element'
+        && node.children[0].tagName === 'img';
+      return onlyImage ? children : <p {...props}>{children}</p>;
+    },
+    img: ({ node, ...props }) => <ResponsiveImage {...props} />,
     h2: ({ node, children, ...props }) => {
       return (
         <h2 {...props}>
@@ -132,6 +165,7 @@ export default function PostPage() {
             ))}
           </div>
         </div>
+        <PostShareActions title={post.title} path={`/posts/${post.slug}/`} />
       </header>
 
       <div className="post-layout">
@@ -139,13 +173,26 @@ export default function PostPage() {
 
         <div className="post-body">
           <TableOfContents headings={post.headings} mobile />
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[[rehypeHeadingIds, { headings: post.headings }], rehypeHighlight]}
-            components={headingComponents}
-          >
-            {post.content}
-          </ReactMarkdown>
+          <SeriesNavigation currentSlug={post.slug} name={post.series} posts={seriesPosts} />
+          {contentError ? (
+            <div className="post-content-state" role="alert">
+              <strong>正文加载失败</strong>
+              <span>请刷新页面后重试。</span>
+            </div>
+          ) : content ? (
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[[rehypeHeadingIds, { headings: post.headings }], rehypeHighlight]}
+              components={headingComponents}
+            >
+              {content}
+            </ReactMarkdown>
+          ) : (
+            <div className="post-content-state" role="status">
+              <span className="route-loading__indicator" />
+              <span>正在加载正文</span>
+            </div>
+          )}
 
           <footer className="post-endnote">
             <span className="section-eyebrow">End of note</span>

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowUpRight, Clock3, Search, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { usePosts } from '../../hooks/usePosts.js';
-import { trackSearchUse } from '../../utils/analytics.js';
+import { recordSearchQuery } from '../../utils/readingHistory.js';
 import './SearchDialog.css';
 
 function normalize(value) {
@@ -13,7 +13,7 @@ function scorePost(post, query) {
   const title = normalize(post.title);
   const tags = normalize(post.tags.join(' '));
   const excerpt = normalize(post.excerpt);
-  const content = normalize(post.content.replace(/[#*`>\[\]()_-]/g, ' '));
+  const content = normalize((post.content || '').replace(/[#*`>\[\]()_-]/g, ' '));
   let score = 0;
 
   if (title === query) score += 20;
@@ -26,21 +26,47 @@ function scorePost(post, query) {
 }
 
 export default function SearchDialog({ open, onOpen, onClose }) {
-  const { posts } = usePosts();
+  const { posts, loadAllPostContents } = usePosts();
   const [query, setQuery] = useState('');
+  const [searchablePosts, setSearchablePosts] = useState(posts);
+  const [isIndexing, setIsIndexing] = useState(false);
   const inputRef = useRef(null);
 
   const results = useMemo(() => {
     const normalizedQuery = normalize(query);
     if (!normalizedQuery) return posts.slice(0, 5);
 
-    return posts
+    return searchablePosts
       .map((post) => ({ post, score: scorePost(post, normalizedQuery) }))
       .filter(({ score }) => score > 0)
       .sort((a, b) => b.score - a.score || new Date(b.post.date) - new Date(a.post.date))
       .slice(0, 8)
       .map(({ post }) => post);
-  }, [query, posts]);
+  }, [query, posts, searchablePosts]);
+
+  useEffect(() => {
+    if (!open || !query.trim() || searchablePosts.some((post) => post.content)) return undefined;
+    let active = true;
+    setIsIndexing(true);
+    loadAllPostContents()
+      .then((loadedPosts) => {
+        if (active) setSearchablePosts(loadedPosts.filter(Boolean));
+      })
+      .finally(() => {
+        if (active) setIsIndexing(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [loadAllPostContents, open, query, searchablePosts]);
+
+  useEffect(() => {
+    if (!open || !query.trim() || isIndexing) return undefined;
+    const timer = window.setTimeout(() => {
+      recordSearchQuery(query, results.length);
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, [isIndexing, open, query, results.length]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -94,7 +120,7 @@ export default function SearchDialog({ open, onOpen, onClose }) {
         </div>
 
         <div className="search-dialog__status">
-          <span>{query ? `${results.length} 条结果` : '最近文章'}</span>
+          <span>{isIndexing ? '正在检索正文…' : query ? `${results.length} 条结果` : '最近文章'}</span>
           <span>ESC 关闭</span>
         </div>
 
@@ -105,10 +131,7 @@ export default function SearchDialog({ open, onOpen, onClose }) {
               <span>尝试更短的关键词或标签名称。</span>
             </div>
           ) : results.map((post) => (
-            <Link key={post.slug} to={`/posts/${post.slug}/`} onClick={() => {
-              if (query) trackSearchUse();
-              onClose();
-            }}>
+            <Link key={post.slug} to={`/posts/${post.slug}/`} onClick={onClose}>
               <div>
                 <span>{post.tags.slice(0, 2).map((tag) => `#${tag}`).join('  ')}</span>
                 <strong>{post.title}</strong>

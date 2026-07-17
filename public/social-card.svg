@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
-  <title id="title">Shane Blog</title>
+  <title id="title">SZ Blog</title>
   <desc id="description">记录 FPGA、数字通信、信号处理、编程实践与生活思考。</desc>
   <rect width="1200" height="630" fill="#f4f7f8"/>
   <g fill="none" stroke="#b8c5ca" stroke-width="2" opacity="0.7">
@@ -20,7 +20,7 @@
   </g>
   <circle cx="115" cy="515" r="7" fill="#00a6c7"/>
   <text x="144" y="526" fill="#34434a" font-family="Arial, sans-serif" font-size="24">BUILD / THINK / SHARE</text>
-  <text x="380" y="278" fill="#111517" font-family="Arial, sans-serif" font-size="74" font-weight="700">Shane Blog</text>
+  <text x="380" y="278" fill="#111517" font-family="Arial, sans-serif" font-size="74" font-weight="700">SZ Blog</text>
   <text x="384" y="338" fill="#007f99" font-family="Arial, sans-serif" font-size="30">Code, systems and thoughtful work.</text>
   <text x="384" y="410" fill="#52636b" font-family="Arial, sans-serif" font-size="25">FPGA · DSP · Digital Communications · Notes</text>
 </svg>

@@ -1,6 +1,6 @@
 {
-  "name": "Shane Blog",
-  "short_name": "Shane Blog",
+  "name": "SZ Blog",
+  "short_name": "SZ Blog",
   "description": "Shane 的个人博客，记录 FPGA、数字通信、信号处理、编程实践与生活思考。",
   "start_url": "/",
   "display": "standalone",

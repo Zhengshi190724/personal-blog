@@ -128,13 +128,14 @@ pre {
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 70% 18%, rgba(0, 210, 255, 0.12), transparent 30%),
-    linear-gradient(145deg, #eef4f5, #d9e4e7);
+  background-color: #d9e4e7;
+  background-image: url('/images/ambient-poster.jpg');
+  background-position: center;
+  background-size: cover;
 }
 
 [data-theme="dark"] .ambient-media {
-  background: #0c0c0c;
+  background-color: #0c0c0c;
 }
 
 .ambient-media video {
@@ -178,6 +179,30 @@ pre {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 20px 72px;
+}
+
+.route-loading {
+  display: flex;
+  min-height: 60vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.route-loading__indicator {
+  width: 24px;
+  height: 2px;
+  background: var(--color-accent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 70%, transparent);
+  animation: route-loading-pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes route-loading-pulse {
+  from { opacity: 0.3; transform: scaleX(0.45); }
+  to { opacity: 1; transform: scaleX(1); }
 }
 
 .liquid-glass {

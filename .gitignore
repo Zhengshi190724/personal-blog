@@ -8,6 +8,9 @@ dist/
 *.png
 !public/social-card.png
 !public/images/**/*.png
+/public/images/posts/**/*-[0-9]*w.webp
+/public/images/posts/**/*-[0-9]*w.avif
+/src/generated/media-manifest.json
 .vercel
 task_plan.md
 findings.md

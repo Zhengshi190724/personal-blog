@@ -76,12 +76,29 @@ test('rejects unknown fields, duplicate tags, and invalid update dates', () => {
 test('normalizes optional cover and series metadata', () => {
   const extendedPost = validPost.replace(
     'excerpt: "记录 FPGA 学习过程。"',
-    'excerpt: "记录 FPGA 学习过程。"\ncover: "/images/posts/fpga/cover.webp"\nseries: "FPGA 入门"',
+    'excerpt: "记录 FPGA 学习过程。"\ncover: "/images/posts/fpga/cover.webp"\nseries: "FPGA 入门"\nseriesOrder: "1"',
   );
   const result = validatePost(extendedPost);
   assert.deepEqual(result.errors, []);
   assert.equal(result.metadata.cover, '/images/posts/fpga/cover.webp');
   assert.equal(result.metadata.series, 'FPGA 入门');
+  assert.equal(result.metadata.seriesOrder, 1);
+});
+
+test('requires a positive order for series posts', () => {
+  const missingOrder = validPost.replace(
+    'excerpt: "记录 FPGA 学习过程。"',
+    'excerpt: "记录 FPGA 学习过程。"\nseries: "FPGA 入门"',
+  );
+  assert.match(validatePost(missingOrder).errors.join(' '), /seriesOrder/);
+
+  const orphanOrder = validPost.replace(
+    'excerpt: "记录 FPGA 学习过程。"',
+    'excerpt: "记录 FPGA 学习过程。"\nseriesOrder: "0"',
+  );
+  const errors = validatePost(orphanOrder).errors.join(' ');
+  assert.match(errors, /正整数/);
+  assert.match(errors, /同时设置 series/);
 });
 
 test('excludes drafts from every shared publication pipeline', () => {

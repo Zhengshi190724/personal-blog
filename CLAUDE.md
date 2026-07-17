@@ -1,8 +1,8 @@
-# Shane Blog Project Guide
+# SZ Blog Project Guide
 
 ## Overview
 
-Shane Blog is a static React 18 and Vite 6 site deployed by Cloudflare Pages from the `master` branch.
+SZ Blog is a static React 18 and Vite 6 site deployed by Cloudflare Pages from the `master` branch.
 
 - Live site: `https://personal-blog-ot6.pages.dev`
 - Repository: `https://github.com/Zhengshi190724/personal-blog`
@@ -12,6 +12,8 @@ Shane Blog is a static React 18 and Vite 6 site deployed by Cloudflare Pages fro
 ## Architecture
 
 Markdown files are imported as raw text by Vite. `src/content/post-schema.js` is the single source of truth for parsing and validating Frontmatter in the browser, publication scripts, CI, and the Vite content-artifact plugin.
+
+Post metadata is available synchronously, while Markdown bodies, article rendering, and syntax highlighting load on demand. Production builds also emit crawlable `dist/posts/<slug>/index.html` files with article metadata and JSON-LD.
 
 Published posts are available through `/posts/:slug/`. Draft posts are validated but excluded from all public lists, search, archives, article routes, RSS, and Sitemap output.
 
@@ -23,6 +25,7 @@ Current routes:
 /posts/:slug/                  Post detail
 /categories/:category/         Category
 /tags/:tag/                    Tag
+/maps/:map/                    Learning map
 /archive/                      Archive
 /about/                        About
 /friends/                      Friends
@@ -43,7 +46,7 @@ draft: "false"
 excerpt: "Post summary"
 ```
 
-Optional fields are `updated`, `cover`, and `series`. Categories are limited to `技术`, `生活`, `娱乐`, and `杂项`. Local covers use an absolute public path such as `/images/posts/example/cover.webp`.
+Optional fields are `updated`, `cover`, `series`, and `seriesOrder`. A series post must provide both series fields, and each order must be unique within that series. Categories are limited to `技术`, `生活`, `娱乐`, and `杂项`. Local covers use an absolute public path such as `/images/posts/example/cover.webp`.
 
 ## Commands
 
@@ -54,6 +57,8 @@ npm test
 npm run test:e2e
 npm run build
 npm run preview
+npm run prepare:media
+npm run review:month -- 2026-07
 npm run new-post -- <slug> --title "Post title" --category 技术
 npm run publish -- <slug> --dry-run
 npm run publish -- <slug>
@@ -61,8 +66,10 @@ npm run publish -- <slug>
 
 `npm run new-post` creates a draft. Complete the metadata and body, then set `draft: "false"` before publishing. The publish command validates and builds the article, commits only that article, rebases onto `origin/master`, and pushes without force.
 
+`VITE_SITE_URL` is the only canonical site-address setting. Keep the default Pages URL until a custom domain is active, then set the production value in Cloudflare Pages and rebuild.
+
 ## Quality and Deployment
 
 `.github/workflows/quality-gate.yml` runs unit tests, strict content validation, the production build, and Playwright smoke tests at desktop and mobile viewports. Cloudflare Pages Git integration owns pull-request previews and production deployments; the workflow does not store deployment tokens.
 
-See `docs/deployment.md`, `docs/publish-markdown-post.md`, and `docs/blog-roadmap.md` for operational details and future work.
+See `docs/deployment.md`, `docs/publish-markdown-post.md`, `docs/analytics-setup.md`, `docs/search-console-setup.md`, `docs/custom-domain-setup.md`, and `docs/blog-roadmap.md` for operational details and future work.

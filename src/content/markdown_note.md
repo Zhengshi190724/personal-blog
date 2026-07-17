@@ -6,6 +6,8 @@ category: "技术"
 featured: "true"
 draft: "false"
 excerpt: "系统学习 Markdown 的标题、列表、链接、图片、代码、表格等常用语法，并掌握提示块、图片标题、目录和视频嵌入等进阶技巧。"
+series: "Markdown 写作与发布"
+seriesOrder: "1"
 ---
 
 Markdown 是一种轻量级标记语言。它用少量符号表达文章结构，让写作者能够专注于内容，而不必在排版工具栏之间频繁切换。

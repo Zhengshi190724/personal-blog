@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const publicRoutes = ['/', '/posts/', '/archive/', '/about/', '/posts/markdown_note/'];
+const publicRoutes = ['/', '/posts/', '/archive/', '/about/', '/maps/systemverilog/', '/posts/markdown_note/'];
 
 for (const route of publicRoutes) {
   test(`${route} renders without browser errors or horizontal overflow`, async ({ page }) => {
@@ -45,4 +45,109 @@ test('homepage shows a complete static welcome message when motion is reduced', 
 
   await expect(page.locator('.typewriter__visual')).toHaveText('感谢你的访问！');
   await expect(page.locator('.typewriter__caret')).toBeHidden();
+});
+
+test('article body and full-text search load Markdown on demand', async ({ page }) => {
+  await page.goto('/posts/sv_learning_note/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.post-body')).toContainText('进程间的通信机制', { timeout: 5000 });
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: '搜索文章' }).click();
+  await page.getByPlaceholder('搜索文章、标签或正文…').fill('semaphore');
+  await expect(page.locator('.search-results')).toContainText('SV 学习笔记', { timeout: 5000 });
+});
+
+test('article media is responsive, stable, and zoomable', async ({ page }) => {
+  await page.goto('/posts/sv_learning_note/', { waitUntil: 'domcontentloaded' });
+  const media = page.locator('.article-media').first();
+  const image = media.locator('img');
+
+  await expect(media).toBeVisible({ timeout: 5000 });
+  await expect(image).toHaveAttribute('loading', 'lazy');
+  await expect(image).toHaveAttribute('width', '632');
+  await expect(image).toHaveAttribute('height', '360');
+  await expect(media.locator('source[type="image/avif"]')).toHaveAttribute('srcset', /480w\.avif 480w/);
+  await expect(media.locator('source[type="image/webp"]')).toHaveAttribute('srcset', /480w\.webp 480w/);
+  await expect(media.locator('figcaption')).toHaveText('整体验证层级图');
+
+  await media.locator('.article-media__trigger').click();
+  await expect(page.getByRole('dialog', { name: '整体验证层级图' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: '整体验证层级图' })).toBeHidden();
+});
+
+test('ambient media uses the local poster when motion is reduced', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+  await expect(page.locator('.ambient-media video')).toHaveCount(0);
+  const background = await page.locator('.ambient-media').evaluate((element) => getComputedStyle(element).backgroundImage);
+  expect(background).toContain('ambient-poster.jpg');
+});
+
+test('series progress and related ranking connect ordered posts', async ({ page }) => {
+  await page.goto('/posts/markdown_note/', { waitUntil: 'domcontentloaded' });
+  const series = page.getByRole('navigation', { name: '系列：Markdown 写作与发布' });
+
+  await expect(series).toContainText('1 / 2');
+  await expect(series.getByRole('link', { name: /Markdown 实用教程/ })).toHaveAttribute('aria-current', 'page');
+  await expect(series.getByRole('link', { name: /如何一键创建和发布 Markdown 文章/ })).toBeVisible();
+  await expect(page.locator('.related-posts__list a').first()).toContainText('如何一键创建和发布 Markdown 文章');
+});
+
+test('content maps expose staged learning paths and matching posts', async ({ page }) => {
+  await page.goto('/posts/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('link', { name: /SystemVerilog/ })).toBeVisible();
+
+  await page.goto('/maps/systemverilog/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { level: 1, name: 'SystemVerilog' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '语言基础' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /SV 学习笔记/ })).toBeVisible();
+});
+
+test('local reading history migrates legacy data and records zero-result searches', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => {
+    localStorage.clear();
+    localStorage.setItem('shane-blog-analytics-v1', JSON.stringify({
+      pageViews: { '/legacy/': 2 },
+      completedArticles: {},
+      searches: 3,
+      totalViews: 2,
+    }));
+  });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+
+  const migrated = await page.evaluate(() => window.blogReadingHistory.snapshot());
+  expect(migrated.pageViews['/legacy/']).toBe(2);
+  expect(migrated.legacySearchCount).toBe(3);
+
+  await page.getByRole('button', { name: '搜索文章' }).click();
+  await page.getByPlaceholder('搜索文章、标签或正文…').fill('绝对不存在的搜索词 xyz');
+  await expect(page.locator('.search-empty')).toBeVisible({ timeout: 5000 });
+  await expect.poll(async () => page.evaluate(() => (
+    window.blogReadingHistory.snapshot().searchQueries.at(-1)?.resultCount
+  ))).toBe(0);
+});
+
+test('article exposes copy-link and system-share actions', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: async (value) => { window.__copiedUrl = value; } },
+    });
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: async (data) => { window.__sharedData = data; },
+    });
+  });
+  await page.goto('/posts/markdown_note/', { waitUntil: 'domcontentloaded' });
+
+  const actions = page.getByRole('group', { name: '文章分享操作' });
+  await actions.getByRole('button', { name: '复制链接' }).click();
+  await expect(actions.getByRole('status')).toHaveText('链接已复制');
+  await expect.poll(() => page.evaluate(() => window.__copiedUrl)).toMatch(/\/posts\/markdown_note\/$/);
+
+  await actions.getByRole('button', { name: '分享' }).click();
+  await expect.poll(() => page.evaluate(() => window.__sharedData?.title)).toContain('Markdown 实用教程');
 });
