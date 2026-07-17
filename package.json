@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run validate:content && vite build",
-    "preview": "vite preview",
+    "preview": "npm run build && wrangler dev",
     "new-post": "node scripts/new-post.js",
     "publish": "node scripts/publish-post.js",
     "validate:content": "node scripts/validate-content.js",
     "test": "node --test scripts/*.test.js",
     "test:e2e": "playwright test",
-    "test:publish": "node --test scripts/post-tools.test.js"
+    "test:publish": "node --test scripts/post-tools.test.js",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",
@@ -26,8 +27,10 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.45.0",
     "@playwright/test": "^1.61.1",
     "@vitejs/plugin-react": "^4.4.1",
-    "vite": "^6.4.1"
+    "vite": "^6.4.1",
+    "wrangler": "^4.111.0"
   }
 }

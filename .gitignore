@@ -12,3 +12,10 @@ dist/
 task_plan.md
 findings.md
 progress.md
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
