@@ -154,6 +154,50 @@
   font-weight: 650;
 }
 
+.markdown-text-color {
+  font-weight: inherit;
+}
+
+.markdown-text-color--red {
+  color: #ff4d4f;
+}
+
+.markdown-text-color--blue {
+  color: #4da3ff;
+}
+
+.markdown-text-color--green {
+  color: #35b56f;
+}
+
+.markdown-text-color--orange {
+  color: #f08b32;
+}
+
+.markdown-text-color--purple {
+  color: #a98bff;
+}
+
+[data-theme='light'] .markdown-text-color--red {
+  color: #c60000;
+}
+
+[data-theme='light'] .markdown-text-color--blue {
+  color: #075eb8;
+}
+
+[data-theme='light'] .markdown-text-color--green {
+  color: #137542;
+}
+
+[data-theme='light'] .markdown-text-color--orange {
+  color: #a94d00;
+}
+
+[data-theme='light'] .markdown-text-color--purple {
+  color: #6546b8;
+}
+
 .post-body blockquote {
   padding: 16px 20px;
   border-left: 2px solid var(--color-accent);

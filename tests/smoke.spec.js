@@ -71,6 +71,29 @@ test('article body and full-text search load Markdown on demand', async ({ page 
   await expect(page.locator('.search-results')).toContainText('SystemVerilog 学习笔记（一）：概述', { timeout: 5000 });
 });
 
+test('Mermaid code blocks render as responsive diagrams and follow the site theme', async ({ page }) => {
+  await page.goto(systemVerilogOverviewRoute, { waitUntil: 'domcontentloaded' });
+
+  const diagram = page.locator('.mermaid-diagram').first();
+  await expect(diagram.locator('svg')).toBeVisible({ timeout: 10000 });
+  await expect(diagram).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('pre code.language-mermaid')).toHaveCount(0);
+
+  await page.getByRole('button', { name: '切换至浅色模式' }).click();
+  await expect(diagram).toHaveAttribute('data-theme', 'light');
+  await expect(diagram.locator('svg')).toBeVisible({ timeout: 10000 });
+});
+
+test('safe inline font colors render without exposing raw HTML', async ({ page }) => {
+  await page.goto('/posts/aat-关键词-并列/', { waitUntil: 'domcontentloaded' });
+
+  const emphasis = page.getByText('正确选项——对文段全面概括或提取共性', { exact: true });
+  await expect(emphasis).toBeVisible();
+  await expect(emphasis).toHaveClass(/markdown-text-color--red/);
+  await expect(page.locator('.post-body')).not.toContainText('<font color=');
+  await expect(emphasis).toHaveCSS('color', 'rgb(255, 77, 79)');
+});
+
 test('article media is responsive, stable, and zoomable', async ({ page }) => {
   await page.goto(systemVerilogOverviewRoute, { waitUntil: 'domcontentloaded' });
   const media = page.locator('.article-media').first();

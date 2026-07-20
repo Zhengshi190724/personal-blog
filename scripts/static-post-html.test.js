@@ -27,7 +27,7 @@ test('creates crawlable article HTML with unique metadata and schema', () => {
     updated: '2026-07-02',
     tags: ['FPGA', 'RTL'],
     cover: '',
-    content: '# FPGA 学习\n\n## 第一节\n\n正文内容。',
+    content: '# FPGA 学习\n\n## 第一节\n\n<font color="red">重点内容</font><script>alert("bad")</script>\n\n```mermaid\nflowchart TD\n  A --> B\n```',
   }, {
     siteUrl: 'https://blog.example.com',
     siteName: 'SZ Blog',
@@ -45,5 +45,11 @@ test('creates crawlable article HTML with unique metadata and schema', () => {
   assert.match(output, /data-prerendered="article"/);
   assert.match(output, /<h1>FPGA &lt;学习&gt;<\/h1>/);
   assert.match(output, /<h2>第一节<\/h2>/);
+  assert.match(output, /class="prerendered-mermaid"/);
+  assert.match(output, /<figcaption>Mermaid 流程图<\/figcaption>/);
+  assert.match(output, /flowchart TD/);
+  assert.match(output, /class="markdown-text-color markdown-text-color--red">重点内容<\/span>/);
+  assert.doesNotMatch(output, /<font/);
+  assert.doesNotMatch(output, /<script[^>]*>\s*alert|alert\(&quot;bad&quot;\)/);
   assert.doesNotMatch(output, /<h1>FPGA 学习<\/h1>/);
 });

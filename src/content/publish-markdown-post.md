@@ -300,3 +300,110 @@ npm run build
 ```
 
 注意使用指定路径执行`git add`，避免`git add.`意外提交`.history`等无关文件。
+
+## 第四部分：一次提交多个文件并自动部署
+
+当一次修改了多篇 Markdown、多个图片文件以及网站代码时，可以把所有有效改动放在同一次 Git 提交中。推送到 `master` 后，Cloudflare Pages 会自动开始生产部署，不需要再手动上传 `dist`。
+
+### 1. 提交前检查全部改动
+
+在 PowerShell 中进入项目目录并查看待提交文件：
+
+```powershell
+Set-Location "D:\26012\document\Claude_Code"
+
+git status --short
+```
+
+确认列表中没有密码、Token、`.history`、临时文件或误创建的空文件。`.obsidian`、`dist` 和自动生成的响应式图片已经通过 `.gitignore` 排除。
+
+### 2. 校验全部文章和网站
+
+依次执行：
+
+```powershell
+npm run validate:content
+npm run test
+npm run build
+```
+
+只有三条命令全部通过后才继续提交。任何一条出现错误，都应先修正对应文章或代码。
+
+### 3. 一次暂存多个文件
+
+如果 `git status --short` 中的所有改动都需要发布，可以执行：
+
+```powershell
+git add -A
+git diff --cached --stat
+```
+
+`git add -A` 会暂存新增、修改、移动和删除的文件。第二条命令用于再次检查即将提交的文件范围。
+
+如果存在不需要发布的本地文件，不要使用 `git add -A`，改为明确指定目录：
+
+```powershell
+git add "src/content"
+git add "public/images/posts"
+git add "src"
+git add "scripts"
+git add "build"
+```
+
+### 4. 创建一次提交
+
+提交说明应概括这批改动，例如：
+
+```powershell
+git commit -m "Update blog articles, images and website"
+```
+
+修改双引号中的文字只会改变 GitHub 提交记录的说明，不会改变网页内容。
+
+### 5. 推送并自动部署
+
+当前网络曾出现 GitHub HTTPS 连接被重置的问题，可以先为本仓库固定使用 HTTP/1.1：
+
+```powershell
+git config --local http.version HTTP/1.1
+git push origin master
+```
+
+推送成功时会出现类似结果：
+
+```text
+旧提交..新提交  master -> master
+```
+
+GitHub 收到 `master` 的新提交后，Cloudflare Pages 会自动执行 `npm run build` 并部署到：
+
+```text
+https://blog.072419.xyz/
+```
+
+### 6. 确认提交和部署
+
+先确认本地与 GitHub 已同步：
+
+```powershell
+git status
+git log -1 --oneline
+```
+
+`git status` 显示分支与 `origin/master` 一致，表示 GitHub 推送成功。随后进入 Cloudflare Pages 的“部署”页面，确认最新生产部署对应刚才的提交哈希。部署完成后刷新线上博客并检查修改过的文章、图片和分类页面。
+
+以后批量更新时，可以重复执行以下核心流程：
+
+```powershell
+Set-Location "D:\26012\document\Claude_Code"
+
+git status --short
+npm run validate:content
+npm run test
+npm run build
+
+git add -A
+git diff --cached --stat
+git commit -m "Update blog articles, images and website"
+git push origin master
+```

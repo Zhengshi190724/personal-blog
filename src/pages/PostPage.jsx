@@ -5,6 +5,8 @@ import { ArrowLeft, Clock3, Hash, Link2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 import { usePosts } from '../hooks/usePosts.js';
 import SEO from '../components/SEO/SEO.jsx';
 import { siteConfig } from '../config/site.js';
@@ -17,8 +19,13 @@ import TableOfContents from '../components/TableOfContents/TableOfContents.jsx';
 import ReadingProgress from '../components/ReadingProgress/ReadingProgress.jsx';
 import ArticleNavigation from '../components/ArticleNavigation/ArticleNavigation.jsx';
 import ResponsiveImage from '../components/ResponsiveImage/ResponsiveImage.jsx';
+import MermaidDiagram from '../components/MermaidDiagram/MermaidDiagram.jsx';
 import SeriesNavigation from '../components/SeriesNavigation/SeriesNavigation.jsx';
 import PostShareActions from '../components/PostShareActions/PostShareActions.jsx';
+import {
+  markdownSanitizeSchema,
+  markdownTextColorClass,
+} from '../utils/markdownHtml.js';
 import 'highlight.js/styles/github-dark.css';
 import './PostPage.css';
 
@@ -38,6 +45,11 @@ function rehypeHeadingIds({ headings }) {
 
     visit(tree);
   };
+}
+
+function nodeText(node) {
+  if (node?.type === 'text') return node.value || '';
+  return node?.children?.map(nodeText).join('') || '';
 }
 
 export default function PostPage() {
@@ -92,6 +104,24 @@ export default function PostPage() {
       return onlyImage ? children : <p {...props}>{children}</p>;
     },
     img: ({ node, ...props }) => <ResponsiveImage {...props} />,
+    font: ({ node, color, children }) => {
+      const colorClass = markdownTextColorClass(color);
+      return (
+        <span className={`markdown-text-color${colorClass ? ` ${colorClass}` : ''}`}>
+          {children}
+        </span>
+      );
+    },
+    pre: ({ node, children, ...props }) => {
+      const codeNode = node?.children?.find((child) => (
+        child.type === 'element' && child.tagName === 'code'
+      ));
+      const classNames = codeNode?.properties?.className || [];
+      if (classNames.includes('language-mermaid')) {
+        return <MermaidDiagram source={nodeText(codeNode).trim()} />;
+      }
+      return <pre {...props}>{children}</pre>;
+    },
     h2: ({ node, children, ...props }) => {
       return (
         <h2 {...props}>
@@ -188,7 +218,12 @@ export default function PostPage() {
           ) : content ? (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
-              rehypePlugins={[[rehypeHeadingIds, { headings: post.headings }], rehypeHighlight]}
+              rehypePlugins={[
+                rehypeRaw,
+                [rehypeHeadingIds, { headings: post.headings }],
+                [rehypeSanitize, markdownSanitizeSchema],
+                rehypeHighlight,
+              ]}
               components={headingComponents}
             >
               {content}
