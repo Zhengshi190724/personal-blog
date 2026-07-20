@@ -92,10 +92,14 @@ tags:
 直接粘贴或拖入图片。Obsidian 会把图片保存到 `public/images/posts` 并生成类似下面的相对链接：
 
 ```markdown
-![interface 示意图](../../public/images/posts/interface.png)
+![基本数据类型](../../../../public/images/posts/sv_learning_note/basic-data-type.png)
 ```
 
-网站会自动将其转换为 `/images/posts/interface.png`。文件名建议使用小写英文、数字和连字符，不要使用空格。也可以手动使用线上路径：
+`../` 的数量由当前 Markdown 文件所在目录的深度决定。例如，位于
+`src/content/SystemVerilog/SV章节学习笔记/` 的文章需要四级 `../../../../` 才能在 Obsidian 中回到仓库根目录。
+
+网站和一键发布脚本会识别任意层级的 `../public/images/`，并自动将上面的链接转换为
+`/images/posts/sv_learning_note/basic-data-type.png`。文件名建议使用小写英文、数字和连字符，不要使用空格。也可以手动使用线上路径：
 
 ```markdown
 ![interface 示意图](/images/posts/sv-interface/interface.png)

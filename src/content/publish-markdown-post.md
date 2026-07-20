@@ -241,6 +241,16 @@ D:\26012\document\Claude_Code\public\images\posts\sv_learning_note\example.png
 
 ### 2.在 Markdown 中引用图片
 
+如果希望图片同时在 Obsidian 和网站中显示，请从当前 Markdown 文件位置写到仓库根目录下的 `public/images`。例如文章位于
+`src/content/SystemVerilog/SV章节学习笔记/` 时：
+
+```markdown
+![基本数据类型](../../../../public/images/posts/sv_learning_note/basic-data-type.png)
+```
+
+`../` 的数量随文章目录深度变化。网站和一键发布脚本会自动识别任意层级的
+`../public/images/`，并转换为下面的线上路径：
+
 ```markdown
 ![example](/images/posts/sv_learning_note/example.png)
 ```

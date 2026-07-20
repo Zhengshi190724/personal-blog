@@ -148,6 +148,10 @@ function cleanDestination(value) {
   }
 }
 
+function publicImageRepoPath(destination) {
+  return destination.match(/(?:^|\/)(public\/images\/.+)$/)?.[1] || '';
+}
+
 export function resolvePublicationAssets(repoRoot, targetAbsolutePath, raw) {
   const publicImagesRoot = resolve(repoRoot, 'public', 'images');
   const destinations = markdownImageDestinations(raw);
@@ -164,9 +168,9 @@ export function resolvePublicationAssets(repoRoot, targetAbsolutePath, raw) {
     if (destination.startsWith('/images/')) {
       absolutePath = resolve(repoRoot, 'public', destination.slice(1));
     } else {
-      const publicIndex = destination.indexOf('public/images/');
-      absolutePath = publicIndex >= 0
-        ? resolve(repoRoot, destination.slice(publicIndex))
+      const publicPath = publicImageRepoPath(destination);
+      absolutePath = publicPath
+        ? resolve(repoRoot, publicPath)
         : resolve(dirname(targetAbsolutePath), destination);
     }
 

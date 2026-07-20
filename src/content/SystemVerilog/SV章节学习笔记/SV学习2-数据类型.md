@@ -15,7 +15,7 @@ excerpt: 从零开始的 SystemVerilog 学习笔记。
 
 ### 总览图
 
-![基本数据类型](../../public/images/posts/sv_learning_note/basic-data-type.png "基本数据类型")
+![基本数据类型](../../../../public/images/posts/sv_learning_note/basic-data-type.png "基本数据类型")
 
 ```
 //type  data_type   signal_name

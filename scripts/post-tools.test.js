@@ -18,6 +18,7 @@ import {
 } from './lib/post-tools.js';
 import { postSlugFromRelativePath } from '../src/content/post-paths.js';
 import { getContentClassification } from '../src/config/navigation.js';
+import { normalizeArticleMediaPath } from '../src/utils/mediaPaths.js';
 
 const validPost = `---
 title: "FPGA 学习笔记"
@@ -194,15 +195,30 @@ test('detects unrelated Git changes without staging them', () => {
   assert.deepEqual(analysis.unrelated, [{ status: '??', path: 'docs/draft.md' }]);
 });
 
-test('resolves Obsidian and web image paths for publication', () => {
+test('normalizes Obsidian image paths from any content depth', () => {
+  assert.equal(
+    normalizeArticleMediaPath('../../../../public/images/posts/example/diagram.png'),
+    '/images/posts/example/diagram.png',
+  );
+  assert.equal(
+    normalizeArticleMediaPath('..\\..\\public\\images\\posts\\example\\diagram.png'),
+    '/images/posts/example/diagram.png',
+  );
+  assert.equal(
+    normalizeArticleMediaPath('/images/posts/example/diagram.png'),
+    '/images/posts/example/diagram.png',
+  );
+});
+
+test('resolves deeply nested Obsidian image paths for publication', () => {
   const root = mkdtempSync(resolve(tmpdir(), 'blog-post-tools-'));
   try {
-    const postPath = resolve(root, 'src/content/example.md');
+    const postPath = resolve(root, 'src/content/SystemVerilog/notes/example.md');
     const imagePath = resolve(root, 'public/images/posts/example/diagram.png');
     mkdirSync(resolve(postPath, '..'), { recursive: true });
     mkdirSync(resolve(imagePath, '..'), { recursive: true });
     writeFileSync(imagePath, 'image');
-    const raw = `${validPost}\n![图](../../public/images/posts/example/diagram.png)\n`;
+    const raw = `${validPost}\n![图](../../../../public/images/posts/example/diagram.png)\n`;
     const result = resolvePublicationAssets(root, postPath, raw);
     assert.deepEqual(result.assets, ['public/images/posts/example/diagram.png']);
     assert.deepEqual(result.missing, []);

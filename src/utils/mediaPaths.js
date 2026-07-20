@@ -3,10 +3,8 @@ export function normalizeArticleMediaPath(value = '') {
   if (!source || /^(?:https?:|data:|blob:)/i.test(source)) return source;
 
   const normalized = source.replaceAll('\\', '/');
-  const publicImagesIndex = normalized.indexOf('public/images/');
-  if (publicImagesIndex >= 0) {
-    return `/${normalized.slice(publicImagesIndex + 'public/'.length)}`;
-  }
+  const publicImageMatch = normalized.match(/(?:^|\/)public\/(images\/.+)$/);
+  if (publicImageMatch) return `/${publicImageMatch[1]}`;
   if (normalized.startsWith('images/')) return `/${normalized}`;
   return normalized;
 }

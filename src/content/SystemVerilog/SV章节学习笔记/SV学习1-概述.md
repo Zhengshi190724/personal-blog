@@ -72,7 +72,7 @@ Debug：在log文件中通过` UVM error` 找到对应时间点，从Verdi波形
 
 ### 验证环境的层级
 
-![整体验证层级图](/images/posts/sv_learning_note/sv-env-layer.jpg "整体验证层级图")
+![整体验证层级图](../../../../public/images/posts/sv_learning_note/sv-env-layer.jpg "整体验证层级图")
 
 > 1.Transaction and Signal Layer
 > - Driver：把一个简单的transaction[^1]描述转换成PIN level的信号交互；
