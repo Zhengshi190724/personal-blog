@@ -55,6 +55,7 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/posts/" element={<PostsPage />} />
             <Route path="/posts/:slug/" element={<PostPage />} />
+            <Route path="/categories/:category/:subcategory/" element={<CategoryPage />} />
             <Route path="/categories/:category/" element={<CategoryPage />} />
             <Route path="/tags/:tag/" element={<TagPage />} />
             <Route path="/maps/:map/" element={<ContentMapPage />} />

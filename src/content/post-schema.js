@@ -1,14 +1,17 @@
-export const ALLOWED_CATEGORIES = ['技术', '生活', '娱乐', '杂项'];
+import { categories, getCategoryByName, getSubcategoryByName } from '../config/navigation.js';
+
+export const ALLOWED_CATEGORIES = categories.map((category) => category.name);
 export const PLACEHOLDER_EXCERPT = '请填写文章摘要。';
 export const PLACEHOLDER_BODY = '从这里开始编写正文。';
 
 const REQUIRED_FIELDS = ['title', 'date', 'tags', 'category', 'featured', 'draft', 'excerpt'];
-const OPTIONAL_FIELDS = ['updated', 'cover', 'series', 'seriesOrder'];
+const OPTIONAL_FIELDS = ['updated', 'cover', 'subcategory', 'series', 'seriesOrder'];
 const ALLOWED_FIELDS = new Set([...REQUIRED_FIELDS, ...OPTIONAL_FIELDS]);
 
 export function validateSlug(slug) {
-  if (!/^[a-z0-9]+(?:[-_][a-z0-9]+)*$/.test(slug || '')) {
-    throw new Error('slug 只能包含小写英文字母、数字、连字符或兼容旧文章的下划线，例如 fpga-learning-note。');
+  if (!/^[\p{Letter}\p{Number}]+(?:[-_][\p{Letter}\p{Number}]+)*$/u.test(slug || '')
+    || slug !== slug.toLocaleLowerCase('zh-CN')) {
+    throw new Error('slug 只能包含小写字母、数字、连字符或兼容旧文章的下划线，例如 fpga-learning-note。');
   }
   return slug;
 }
@@ -62,30 +65,49 @@ export function parseFrontmatter(raw) {
   const data = {};
   const parseErrors = [];
 
-  match[1].split(/\r?\n/).forEach((line, index) => {
-    if (!line.trim() || line.trimStart().startsWith('#')) return;
+  const lines = match[1].split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (!line.trim() || line.trimStart().startsWith('#')) continue;
+    if (/^\s/.test(line)) {
+      parseErrors.push(`Frontmatter 第 ${index + 1} 行存在无法识别的缩进。`);
+      continue;
+    }
     const separator = line.indexOf(':');
     if (separator === -1) {
       parseErrors.push(`Frontmatter 第 ${index + 1} 行缺少冒号。`);
-      return;
+      continue;
     }
 
     const key = line.slice(0, separator).trim();
     if (!key) {
       parseErrors.push(`Frontmatter 第 ${index + 1} 行缺少字段名。`);
-      return;
+      continue;
     }
     if (Object.hasOwn(data, key)) {
       parseErrors.push(`字段 ${key} 重复定义。`);
-      return;
+      continue;
     }
 
     try {
-      data[key] = parseValue(line.slice(separator + 1));
+      const value = line.slice(separator + 1);
+      if (value.trim()) {
+        data[key] = parseValue(value);
+        continue;
+      }
+
+      const items = [];
+      while (index + 1 < lines.length) {
+        const itemMatch = lines[index + 1].match(/^\s+-\s+(.+?)\s*$/);
+        if (!itemMatch) break;
+        items.push(unquote(itemMatch[1]));
+        index += 1;
+      }
+      data[key] = items.length > 0 ? items : '';
     } catch (error) {
       parseErrors.push(`字段 ${key} 无法解析：${error.message}`);
     }
-  });
+  }
 
   return { data, content: match[2], hasFrontmatter: true, parseErrors };
 }
@@ -106,7 +128,8 @@ function normalizeMetadata(data) {
     date: typeof data.date === 'string' ? data.date : '',
     updated: typeof data.updated === 'string' && data.updated ? data.updated : '',
     tags: Array.isArray(data.tags) ? data.tags.map((tag) => tag.trim()) : [],
-    category: typeof data.category === 'string' ? data.category : '',
+    category: typeof data.category === 'string' ? data.category.trim() : '',
+    subcategory: typeof data.subcategory === 'string' ? data.subcategory.trim() : '',
     featured: data.featured === 'true',
     draft: data.draft === 'true',
     excerpt: typeof data.excerpt === 'string' ? data.excerpt.trim() : '',
@@ -160,6 +183,17 @@ export function validatePost(raw, { slug = '' } = {}) {
 
   if (Object.hasOwn(data, 'category') && !ALLOWED_CATEGORIES.includes(data.category)) {
     errors.push(`category 必须是：${ALLOWED_CATEGORIES.join('、')}。`);
+  }
+  if (Object.hasOwn(data, 'subcategory')) {
+    const category = getCategoryByName(data.category);
+    if (!presentString(data.subcategory)) {
+      errors.push('subcategory 存在时不能为空。');
+    } else if (!category || !getSubcategoryByName(category, data.subcategory)) {
+      const allowed = category?.subcategories?.map((item) => item.name).join('、');
+      errors.push(allowed
+        ? `category 为 ${data.category} 时，subcategory 必须是：${allowed}。`
+        : `category 为 ${data.category || '空'} 时不能设置 subcategory。`);
+    }
   }
   for (const field of ['featured', 'draft']) {
     if (Object.hasOwn(data, field) && !['true', 'false'].includes(data[field])) {

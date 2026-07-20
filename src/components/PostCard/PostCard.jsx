@@ -1,11 +1,27 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowUpRight, Clock3 } from 'lucide-react';
-import { getCategoryByName } from '../../config/navigation.js';
+import {
+  getCategoryByName,
+  getCategoryPath,
+  getSubcategoryByName,
+} from '../../config/navigation.js';
 import './PostCard.css';
 
-export default function PostCard({ slug, title, date, tags, category, excerpt, readingTime, index = 0, featured = false }) {
+export default function PostCard({
+  slug,
+  title,
+  date,
+  tags,
+  category,
+  subcategory,
+  excerpt,
+  readingTime,
+  index = 0,
+  featured = false,
+}) {
   const categoryConfig = getCategoryByName(category);
+  const subcategoryConfig = getSubcategoryByName(categoryConfig, subcategory);
   const formattedDate = date
     ? new Date(date).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
     : '';
@@ -34,7 +50,14 @@ export default function PostCard({ slug, title, date, tags, category, excerpt, r
 
       <div className="post-card__footer">
         <div className="post-card-tags">
-          {categoryConfig && <Link to={`/categories/${categoryConfig.slug}/`} className="post-card-category">{categoryConfig.name}</Link>}
+          {categoryConfig && (
+            <Link
+              to={getCategoryPath(categoryConfig, subcategoryConfig)}
+              className="post-card-category"
+            >
+              {subcategoryConfig ? `${categoryConfig.name} / ${subcategoryConfig.name}` : categoryConfig.name}
+            </Link>
+          )}
           {tags.slice(0, featured ? 4 : 2).map((tag) => (
             <Link key={tag} to={`/tags/${tag}/`} className="post-card-tag">#{tag}</Link>
           ))}

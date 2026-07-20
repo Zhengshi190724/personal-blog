@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .DS_Store
+**/.obsidian/
+.trash/
 *.local
 .playwright-mcp/
 /playwright-report/
@@ -12,6 +14,7 @@ dist/
 /public/images/posts/**/*-[0-9]*w.avif
 /src/generated/media-manifest.json
 .vercel
+.planning/
 task_plan.md
 findings.md
 progress.md

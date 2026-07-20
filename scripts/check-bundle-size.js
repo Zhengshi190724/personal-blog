@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
@@ -7,6 +7,7 @@ import { loadPostRecords } from '../build/postData.js';
 const projectRoot = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const distDir = resolve(projectRoot, 'dist');
 const assetsDir = resolve(distDir, 'assets');
+const manifestPath = resolve(distDir, '.vite', 'manifest.json');
 const maxMainBytes = 500_000;
 
 if (!existsSync(resolve(distDir, 'index.html'))) {
@@ -32,11 +33,21 @@ if (entryBytes > maxMainBytes) {
   throw new Error(`主 JavaScript 为 ${(entryBytes / 1000).toFixed(2)} kB，超过 ${maxMainBytes / 1000} kB 限制。`);
 }
 
-const assetNames = readdirSync(assetsDir);
 const posts = loadPostRecords(resolve(projectRoot, 'src/content'));
+if (!existsSync(manifestPath)) throw new Error('未找到 Vite 构建 manifest。');
+const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 const missingChunks = posts
-  .map((post) => post.slug)
-  .filter((slug) => !assetNames.some((name) => name.startsWith(`${slug}-`) && name.endsWith('.js')));
+  .filter((post) => {
+    const expectedSource = `src/content/${post.sourcePath}`.replaceAll('\\', '/');
+    return !Object.entries(manifest).some(([key, entry]) => {
+      const candidates = [key, entry.src]
+        .filter(Boolean)
+        .map((value) => value.replaceAll('\\', '/').split('?')[0]);
+      return candidates.some((value) => value.endsWith(expectedSource))
+        && entry.file?.endsWith('.js');
+    });
+  })
+  .map((post) => post.slug);
 
 if (missingChunks.length > 0) {
   throw new Error(`以下文章没有独立正文 chunk：${missingChunks.join('、')}`);
@@ -47,9 +58,10 @@ const invalidStaticPages = posts
     const staticPath = resolve(distDir, 'posts', post.slug, 'index.html');
     if (!existsSync(staticPath)) return true;
     const source = readFileSync(staticPath, 'utf8');
+    const encodedPostPath = encodeURI(`/posts/${post.slug}/`);
     return !source.includes('data-prerendered="article"')
       || !source.includes('type="application/ld+json"')
-      || !source.includes(`/posts/${post.slug}/`);
+      || !source.includes(encodedPostPath);
   })
   .map((post) => post.slug);
 

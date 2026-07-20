@@ -1,14 +1,15 @@
 import postMetadata from 'virtual:post-metadata';
+import { normalizePostRelativePath } from '../content/post-paths.js';
 
-const contentModules = import.meta.glob('../content/*.md', {
+const contentModules = import.meta.glob('../content/**/*.md', {
   query: '?raw',
   import: 'default',
 });
 
 const contentLoaders = Object.fromEntries(
   Object.entries(contentModules).map(([filepath, loader]) => {
-    const slug = filepath.split('/').pop().replace(/\.md$/, '');
-    return [slug, loader];
+    const sourcePath = normalizePostRelativePath(filepath);
+    return [sourcePath, loader];
   }),
 );
 const contentCache = new Map();
@@ -23,7 +24,7 @@ export function getPostBySlug(slug) {
 
 export async function loadPostBySlug(slug) {
   const post = getPostBySlug(slug);
-  const loader = contentLoaders[slug];
+  const loader = contentLoaders[post?.sourcePath];
   if (!post || !loader) return null;
   if (!contentCache.has(slug)) {
     contentCache.set(slug, Promise.all([
@@ -47,6 +48,12 @@ export function getPostsByTag(tag) {
 
 export function getPostsByCategory(category) {
   return postMetadata.filter((post) => post.category === category);
+}
+
+export function getPostsBySubcategory(category, subcategory) {
+  return postMetadata.filter((post) => (
+    post.category === category && post.subcategory === subcategory
+  ));
 }
 
 export function getFeaturedPosts() {
@@ -92,9 +99,12 @@ export function getRelatedPosts(slug, limit = 3) {
       const sharedTags = post.tags.filter((tag) => current.tags.includes(tag)).length;
       const sameSeries = Boolean(current.series && post.series === current.series);
       const sameCategory = post.category === current.category;
+      const sameSubcategory = Boolean(
+        current.subcategory && post.subcategory === current.subcategory,
+      );
       return {
         post,
-        score: sharedTags * 2 + (sameCategory ? 3 : 0) + (sameSeries ? 8 : 0),
+        score: sharedTags * 2 + (sameCategory ? 3 : 0) + (sameSubcategory ? 4 : 0) + (sameSeries ? 8 : 0),
       };
     })
     .filter(({ score }) => score > 0)

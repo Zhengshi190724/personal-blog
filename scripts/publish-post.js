@@ -5,6 +5,7 @@ import { siteConfig } from '../src/config/site.js';
 import {
   analyzePublicationChanges,
   parseGitStatus,
+  resolvePublicationAssets,
   resolvePostTarget,
   validatePost,
 } from './lib/post-tools.js';
@@ -92,17 +93,29 @@ try {
     fail('文章仍是草稿。请将 draft 改为 "false" 后再发布。');
   }
 
-  const entries = statusEntries();
-  const { targetChanged, unrelated } = analyzePublicationChanges(entries, target.repoPath);
-  if (!targetChanged) fail(`文章没有未提交的修改：${target.repoPath}`);
+  const { assets, missing } = resolvePublicationAssets(repoRoot, target.absolutePath, raw);
+  if (missing.length > 0) {
+    fail(`文章引用的本地图片不存在：\n${missing.join('\n')}`);
+  }
 
-  if (unrelated.length > 0 && !options.dryRun) {
-    const details = unrelated.map((entry) => `${entry.status} ${entry.path}`).join('\n');
-    fail(`检测到与本次文章无关的未提交文件。为避免误提交，发布已停止：\n${details}`);
+  const entries = statusEntries();
+  const {
+    targetChanged,
+    assetsChanged,
+    unrelated,
+  } = analyzePublicationChanges(entries, target.repoPath, assets);
+  if (!targetChanged && assetsChanged.length === 0) {
+    fail(`文章及其引用图片都没有未提交的修改：${target.repoPath}`);
+  }
+
+  const stagedUnrelated = unrelated.filter((entry) => entry.status[0] !== ' ' && entry.status[0] !== '?');
+  if (stagedUnrelated.length > 0) {
+    const details = stagedUnrelated.map((entry) => `${entry.status} ${entry.path}`).join('\n');
+    fail(`暂存区中存在与本次文章无关的文件，请先提交或取消暂存：\n${details}`);
   }
 
   if (unrelated.length > 0) {
-    console.log('\n提示：dry-run 已忽略以下无关改动，真实发布前需要先处理：');
+    console.log('\n提示：以下无关改动会保持原状，不会进入本次提交：');
     unrelated.forEach((entry) => console.log(`${entry.status} ${entry.path}`));
   }
 
@@ -117,6 +130,7 @@ try {
   if (options.dryRun) {
     console.log('\ndry-run 检查通过，没有修改 Git 历史或推送远程仓库。');
     console.log(`预计提交信息：${commitMessage}`);
+    console.log(`预计同步图片：${assets.length} 张`);
     console.log(`预计线上地址：${liveUrl}`);
     process.exit(0);
   }
@@ -126,13 +140,21 @@ try {
     fail(`当前分支是 ${branch || 'detached HEAD'}；线上发布必须在 ${productionBranch} 分支执行。`);
   }
 
-  git(['add', '--', target.repoPath]);
-  const staged = git(['diff', '--cached', '--quiet', '--', target.repoPath], { allowFailure: true });
+  const publicationPaths = [target.repoPath, ...assets];
+  git(['add', '--', ...publicationPaths]);
+  const stagedNames = git(['diff', '--cached', '--name-only'], { capture: true }).stdout
+    .split(/\r?\n/)
+    .filter(Boolean);
+  const unexpectedStaged = stagedNames.filter((path) => !publicationPaths.includes(path));
+  if (unexpectedStaged.length > 0) {
+    fail(`暂存区出现了非本次发布文件，提交已停止：\n${unexpectedStaged.join('\n')}`);
+  }
+  const staged = git(['diff', '--cached', '--quiet', '--', ...publicationPaths], { allowFailure: true });
   if (staged.status === 0) fail('暂存后没有检测到可提交的文章修改。');
   if (staged.status !== 1) fail('无法检查暂存区状态。');
 
   git(['commit', '-m', commitMessage]);
-  git(['pull', '--rebase', 'origin', productionBranch]);
+  git(['pull', '--rebase', '--autostash', 'origin', productionBranch]);
   git(['push', 'origin', productionBranch]);
 
   console.log('\n文章已推送，Cloudflare Pages 将自动开始部署。');

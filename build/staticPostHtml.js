@@ -2,6 +2,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { normalizeArticleMediaPath } from '../src/utils/mediaPaths.js';
 
 function escapeHtml(value = '') {
   return String(value)
@@ -30,7 +31,13 @@ function renderMarkdown(content) {
     ReactMarkdown,
     {
       remarkPlugins: [remarkGfm],
-      components: { h1: () => null },
+      components: {
+        h1: () => null,
+        img: ({ src, ...props }) => React.createElement('img', {
+          ...props,
+          src: normalizeArticleMediaPath(src),
+        }),
+      },
     },
     content,
   ));

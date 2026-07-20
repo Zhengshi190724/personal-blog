@@ -58,6 +58,10 @@ export function contentArtifactsPlugin({
         ...['/posts/', '/archive/', '/about/', '/friends/'].map((path) => ({ path, lastmod: latestModified })),
         ...posts.map((post) => ({ path: `/posts/${post.slug}/`, lastmod: post.updated || post.date })),
         ...categories.map((category) => ({ path: `/categories/${category.slug}/`, lastmod: latestModified })),
+        ...categories.flatMap((category) => (category.subcategories || []).map((subcategory) => ({
+          path: `/categories/${category.slug}/${subcategory.slug}/`,
+          lastmod: latestModified,
+        }))),
         ...contentMaps.map((contentMap) => ({ path: `/maps/${contentMap.slug}/`, lastmod: latestModified })),
         ...tags.map((tag) => ({ path: `/tags/${encodeURIComponent(tag)}/`, lastmod: latestModified })),
       ];

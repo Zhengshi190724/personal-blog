@@ -7,6 +7,9 @@ import { categories } from './src/config/navigation.js';
 import { contentMaps } from './src/config/contentMaps.js';
 
 export default defineConfig({
+  build: {
+    manifest: true,
+  },
   plugins: [
     react(),
     postMetadataPlugin(),

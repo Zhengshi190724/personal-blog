@@ -8,7 +8,11 @@ import rehypeHighlight from 'rehype-highlight';
 import { usePosts } from '../hooks/usePosts.js';
 import SEO from '../components/SEO/SEO.jsx';
 import { siteConfig } from '../config/site.js';
-import { getCategoryByName } from '../config/navigation.js';
+import {
+  getCategoryByName,
+  getCategoryPath,
+  getSubcategoryByName,
+} from '../config/navigation.js';
 import TableOfContents from '../components/TableOfContents/TableOfContents.jsx';
 import ReadingProgress from '../components/ReadingProgress/ReadingProgress.jsx';
 import ArticleNavigation from '../components/ArticleNavigation/ArticleNavigation.jsx';
@@ -77,6 +81,7 @@ export default function PostPage() {
   const { previous, next } = getAdjacentPosts(post.slug);
   const related = getRelatedPosts(post.slug);
   const category = getCategoryByName(post.category);
+  const subcategory = getSubcategoryByName(category, post.subcategory);
   const seriesPosts = getPostsBySeries(post.series);
 
   const headingComponents = {
@@ -158,7 +163,8 @@ export default function PostPage() {
             </time>
           )}
           <span className="post-reading-time"><Clock3 size={14} /> {post.readingTime} 分钟阅读</span>
-          {category && <Link to={`/categories/${category.slug}/`} className="post-tag">{category.name}</Link>}
+          {category && <Link to={getCategoryPath(category)} className="post-tag">{category.name}</Link>}
+          {subcategory && <Link to={getCategoryPath(category, subcategory)} className="post-tag">{subcategory.name}</Link>}
           <div className="post-tags">
             {post.tags.map((tag) => (
               <Link key={tag} to={`/tags/${tag}/`} className="post-tag"><Hash size={12} />{tag}</Link>

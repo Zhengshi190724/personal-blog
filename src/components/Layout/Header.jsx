@@ -16,7 +16,10 @@ const navGroups = [
   {
     label: '文章',
     to: '/posts/',
-    children: categories.map((category) => ({ label: category.name, to: `/categories/${category.slug}/` })),
+    children: categories.map((category) => ({
+      label: category.name,
+      to: `/categories/${category.slug}/`,
+    })),
   },
   {
     label: '归档',
@@ -101,7 +104,11 @@ export default function Header() {
             {navGroups.map((group) => (
               <div className={`mobile-nav-group${group.children?.length ? '' : ' mobile-nav-group--single'}`} key={group.label}>
                 <Link className="mobile-nav-group__title" to={group.to}>{group.label}</Link>
-                {group.children?.length > 0 && <div>{group.children.map((child) => <Link key={child.to} to={child.to}>{child.label}</Link>)}</div>}
+                {group.children?.length > 0 && (
+                  <div>
+                    {group.children.map((child) => <Link key={child.to} to={child.to}>{child.label}</Link>)}
+                  </div>
+                )}
               </div>
             ))}
             <div className="mobile-nav-group">

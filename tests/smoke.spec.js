@@ -1,6 +1,20 @@
 import { expect, test } from '@playwright/test';
 
-const publicRoutes = ['/', '/posts/', '/archive/', '/about/', '/maps/systemverilog/', '/posts/markdown_note/'];
+const systemVerilogOverviewRoute = '/posts/systemverilog-sv章节学习笔记-sv学习1-概述/';
+
+const publicRoutes = [
+  '/',
+  '/posts/',
+  '/archive/',
+  '/about/',
+  '/maps/systemverilog/',
+  '/categories/learning/',
+  '/categories/learning/aat/',
+  '/categories/technology/systemverilog/',
+  '/posts/aat-关键词-因果/',
+  systemVerilogOverviewRoute,
+  '/posts/markdown_note/',
+];
 
 for (const route of publicRoutes) {
   test(`${route} renders without browser errors or horizontal overflow`, async ({ page }) => {
@@ -48,17 +62,17 @@ test('homepage shows a complete static welcome message when motion is reduced', 
 });
 
 test('article body and full-text search load Markdown on demand', async ({ page }) => {
-  await page.goto('/posts/sv_learning_note/', { waitUntil: 'domcontentloaded' });
+  await page.goto(systemVerilogOverviewRoute, { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.post-body')).toContainText('进程间的通信机制', { timeout: 5000 });
 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: '搜索文章' }).click();
   await page.getByPlaceholder('搜索文章、标签或正文…').fill('semaphore');
-  await expect(page.locator('.search-results')).toContainText('SV 学习笔记', { timeout: 5000 });
+  await expect(page.locator('.search-results')).toContainText('SystemVerilog 学习笔记（一）：概述', { timeout: 5000 });
 });
 
 test('article media is responsive, stable, and zoomable', async ({ page }) => {
-  await page.goto('/posts/sv_learning_note/', { waitUntil: 'domcontentloaded' });
+  await page.goto(systemVerilogOverviewRoute, { waitUntil: 'domcontentloaded' });
   const media = page.locator('.article-media').first();
   const image = media.locator('img');
 
@@ -95,14 +109,50 @@ test('series progress and related ranking connect ordered posts', async ({ page 
   await expect(page.locator('.related-posts__list a').first()).toContainText('如何一键创建和发布 Markdown 文章');
 });
 
-test('content maps expose staged learning paths and matching posts', async ({ page }) => {
+test('posts page omits learning maps while direct content-map routes remain available', async ({ page }) => {
   await page.goto('/posts/', { waitUntil: 'domcontentloaded' });
-  await expect(page.getByRole('link', { name: /SystemVerilog/ })).toBeVisible();
+  await expect(page.getByText('Learning maps')).toHaveCount(0);
+  await expect(page.locator('a[href="/maps/systemverilog/"]')).toHaveCount(0);
 
   await page.goto('/maps/systemverilog/', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { level: 1, name: 'SystemVerilog' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '语言基础' })).toBeVisible();
-  await expect(page.getByRole('link', { name: /SV 学习笔记/ })).toBeVisible();
+  await expect(page.locator(`main a[href="${systemVerilogOverviewRoute}"]`).first()).toBeVisible();
+});
+
+test('article navigation shows only ordered top-level categories', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const articleMenu = page.locator('.header-nav .nav-group').filter({ hasText: '文章' });
+  await expect(articleMenu.locator('.nav-dropdown a')).toHaveText([
+    '技术',
+    '生活',
+    '娱乐',
+    '学习',
+    '杂项',
+  ]);
+
+  await expect(articleMenu.locator('a', { hasText: 'SystemVerilog' })).toHaveCount(0);
+  await expect(articleMenu.locator('a', { hasText: 'AAT' })).toHaveCount(0);
+
+  await page.goto('/categories/technology/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('navigation', { name: '技术细分类' }).getByRole('link', { name: 'SystemVerilog' })).toBeVisible();
+
+  await page.goto('/categories/learning/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('navigation', { name: '学习细分类' }).getByRole('link', { name: 'AAT' })).toBeVisible();
+
+  await page.goto('/categories/technology/systemverilog/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { level: 1, name: 'SystemVerilog' })).toBeVisible();
+  await expect(page.locator(`.post-card-link[href="${systemVerilogOverviewRoute}"]`)).toBeVisible();
+});
+
+test('nested AAT and SystemVerilog notes appear in their folder-backed subcategories', async ({ page }) => {
+  await page.goto('/categories/learning/aat/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { level: 1, name: 'AAT' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '行测言语：因果关系', exact: true })).toBeVisible();
+
+  await page.goto('/categories/technology/systemverilog/', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('link', { name: 'SystemVerilog：event 与 mailbox', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'SystemVerilog 学习笔记（二）：数据类型', exact: true })).toBeVisible();
 });
 
 test('local reading history migrates legacy data and records zero-result searches', async ({ page }) => {

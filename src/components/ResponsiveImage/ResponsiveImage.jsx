@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ImageOff, Maximize2, X } from 'lucide-react';
 import mediaManifest from '../../generated/media-manifest.json';
+import { normalizeArticleMediaPath } from '../../utils/mediaPaths.js';
 import './ResponsiveImage.css';
 
 function srcSet(items = []) {
@@ -11,7 +12,8 @@ function srcSet(items = []) {
 export default function ResponsiveImage({ src = '', alt = '', title = '' }) {
   const [expanded, setExpanded] = useState(false);
   const [failed, setFailed] = useState(false);
-  const media = mediaManifest[src];
+  const normalizedSrc = normalizeArticleMediaPath(src);
+  const media = mediaManifest[normalizedSrc];
   const caption = title || alt;
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export default function ResponsiveImage({ src = '', alt = '', title = '' }) {
             {media?.sources.avif.length > 0 && <source type="image/avif" srcSet={srcSet(media.sources.avif)} sizes="(max-width: 850px) calc(100vw - 40px), 720px" />}
             {media?.sources.webp.length > 0 && <source type="image/webp" srcSet={srcSet(media.sources.webp)} sizes="(max-width: 850px) calc(100vw - 40px), 720px" />}
             <img
-              src={src}
+              src={normalizedSrc}
               alt={alt}
               title={title || undefined}
               width={media?.width}
@@ -63,7 +65,7 @@ export default function ResponsiveImage({ src = '', alt = '', title = '' }) {
           if (event.target === event.currentTarget) setExpanded(false);
         }}>
           <button type="button" className="media-lightbox__close" onClick={() => setExpanded(false)} aria-label="关闭图片预览"><X size={20} /></button>
-          <img src={src} alt={alt} />
+          <img src={normalizedSrc} alt={alt} />
           {caption && <p>{caption}</p>}
         </div>,
         document.body,

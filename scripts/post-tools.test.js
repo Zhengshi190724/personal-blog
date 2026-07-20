@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import {
   analyzePublicationChanges,
@@ -8,11 +10,14 @@ import {
   isPublishedPost,
   parseGitStatus,
   parseFrontmatter,
+  resolvePublicationAssets,
   resolvePostTarget,
   titleFromSlug,
   validatePost,
   validateSlug,
 } from './lib/post-tools.js';
+import { postSlugFromRelativePath } from '../src/content/post-paths.js';
+import { getContentClassification } from '../src/config/navigation.js';
 
 const validPost = `---
 title: "FPGA 学习笔记"
@@ -35,6 +40,17 @@ test('validates and formats slugs', () => {
   assert.equal(titleFromSlug('fpga-learning-note'), 'Fpga Learning Note');
   assert.throws(() => validateSlug('../secret'), /slug/);
   assert.throws(() => validateSlug('FPGA Note'), /slug/);
+  assert.equal(validateSlug('aat-关键词-因果'), 'aat-关键词-因果');
+});
+
+test('creates stable slugs and classifications for nested content folders', () => {
+  assert.equal(
+    postSlugFromRelativePath('SystemVerilog/SV章节学习笔记/SV学习2-数据类型.md'),
+    'systemverilog-sv章节学习笔记-sv学习2-数据类型',
+  );
+  const classification = getContentClassification('AAT/关键词/因果.md');
+  assert.equal(classification.category.name, '学习');
+  assert.equal(classification.subcategory.name, 'AAT');
 });
 
 test('formats local dates', () => {
@@ -50,6 +66,25 @@ test('parses and validates a complete post', () => {
   assert.equal(result.metadata.featured, false);
   assert.equal(result.metadata.draft, false);
   assert.equal(result.metadata.updated, '2026-07-15');
+});
+
+test('accepts Obsidian block-list tags and a configured subcategory', () => {
+  const obsidianPost = validPost
+    .replace('tags: ["FPGA", "note"]', 'tags:\n  - systemverilog\n  - verification')
+    .replace('category: "技术"', 'category: "技术"\nsubcategory: "SystemVerilog"');
+  const result = validatePost(obsidianPost);
+  assert.deepEqual(result.errors, []);
+  assert.deepEqual(result.metadata.tags, ['systemverilog', 'verification']);
+  assert.equal(result.metadata.subcategory, 'SystemVerilog');
+});
+
+test('accepts 学习 and rejects subcategories under the wrong category', () => {
+  assert.deepEqual(validatePost(validPost.replace('技术', '学习')).errors, []);
+  const invalid = validPost.replace(
+    'category: "技术"',
+    'category: "生活"\nsubcategory: "SystemVerilog"',
+  );
+  assert.match(validatePost(invalid).errors.join(' '), /不能设置 subcategory/);
 });
 
 test('rejects template placeholders and invalid metadata', () => {
@@ -111,6 +146,9 @@ test('resolves posts only inside src/content', () => {
   const root = resolve('D:/example-blog');
   const target = resolvePostTarget(root, 'fpga-learning-note');
   assert.equal(target.repoPath, 'src/content/fpga-learning-note.md');
+  const nested = resolvePostTarget(root, 'AAT/verbal-reasoning');
+  assert.equal(nested.repoPath, 'src/content/AAT/verbal-reasoning.md');
+  assert.equal(nested.slug, 'aat-verbal-reasoning');
   assert.throws(() => resolvePostTarget(root, '../outside.md'), /src\/content/);
 });
 
@@ -119,6 +157,7 @@ test('creates a safe template that must be completed before publishing', () => {
     title: '发布脚本测试',
     date: '2026-07-14',
     category: '杂项',
+    subcategory: '',
   });
   const templateErrors = validatePost(template).errors.join(' ');
   assert.match(templateErrors, /tags/);
@@ -133,9 +172,41 @@ test('creates a safe template that must be completed before publishing', () => {
   assert.deepEqual(validatePost(completed).errors, []);
 });
 
+test('adds an optional subcategory to new post templates', () => {
+  const template = createPostTemplate({
+    title: 'SV 基础',
+    date: '2026-07-20',
+    category: '技术',
+    subcategory: 'SystemVerilog',
+  });
+  assert.match(template, /subcategory: "SystemVerilog"/);
+});
+
 test('detects unrelated Git changes without staging them', () => {
-  const entries = parseGitStatus(' M src/content/fpga-note.md\n?? docs/draft.md\n');
-  const analysis = analyzePublicationChanges(entries, 'src/content/fpga-note.md');
+  const entries = parseGitStatus(' M src/content/fpga-note.md\n?? public/images/posts/fpga.png\n?? docs/draft.md\n');
+  const analysis = analyzePublicationChanges(
+    entries,
+    'src/content/fpga-note.md',
+    ['public/images/posts/fpga.png'],
+  );
   assert.equal(analysis.targetChanged, true);
+  assert.deepEqual(analysis.assetsChanged, [{ status: '??', path: 'public/images/posts/fpga.png' }]);
   assert.deepEqual(analysis.unrelated, [{ status: '??', path: 'docs/draft.md' }]);
+});
+
+test('resolves Obsidian and web image paths for publication', () => {
+  const root = mkdtempSync(resolve(tmpdir(), 'blog-post-tools-'));
+  try {
+    const postPath = resolve(root, 'src/content/example.md');
+    const imagePath = resolve(root, 'public/images/posts/example/diagram.png');
+    mkdirSync(resolve(postPath, '..'), { recursive: true });
+    mkdirSync(resolve(imagePath, '..'), { recursive: true });
+    writeFileSync(imagePath, 'image');
+    const raw = `${validPost}\n![图](../../public/images/posts/example/diagram.png)\n`;
+    const result = resolvePublicationAssets(root, postPath, raw);
+    assert.deepEqual(result.assets, ['public/images/posts/example/diagram.png']);
+    assert.deepEqual(result.missing, []);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });

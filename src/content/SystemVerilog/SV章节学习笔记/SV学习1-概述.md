@@ -1,23 +1,26 @@
 ---
-title: "SV 学习笔记"
-date: "2026-07-15"
-updated: "2026-07-15"
-tags: ["systemverilog"]
-category: "技术"
+title: SystemVerilog 学习笔记（一）：概述
+date: 2026-07-15
+updated: 2026-07-18
+tags:
+  - systemverilog
+  - overview
+category: 技术
+subcategory: SystemVerilog
 featured: "false"
 draft: "false"
-excerpt: "从零开始的 SystemVerilog 学习笔记。"
+excerpt: 从零开始的 SystemVerilog 学习笔记。
 ---
-
 # SV 学习笔记
 
 必看的SV学习书籍：SystemVerilog 验证测试平台编写指南 [美] 克里斯·斯皮尔
 
-## 1、SV概括
+## SV概括
 
 ### 数字IC验证的目的
 
->简单来说，就是**寻找漏洞**，确保设备能够成功地完成预定的任务、预期的功能可以完整的实现!
+>1. 简单来说，就是**寻找漏洞**；
+>2. 确保设备能够成功地完成预定的任务、预期的功能可以完整的实现!
 
 ### IC验证的流程
 
@@ -35,10 +38,10 @@ excerpt: "从零开始的 SystemVerilog 学习笔记。"
 flowchart TD
     A["阅读 spec 文档（信号含义、时序、寄存器、功能）"]
     B["提取功能点，制定验证计划（Excel）"]
-    C["搭建验证平台（SC 和 UVM）"]
+    C["搭建验证平台（SV和UVM）"]
     D["编写测试激励（sequence / case，跑回归）"]
     E["Debug（log 和 Verdi 波形）"]
-    F["收集覆盖率（代码覆盖率和功能覆盖率）"]
+    F["收集覆盖率（代码覆盖率、功能覆盖率和断言覆盖率）"]
 
     A --> B
     B --> C
@@ -46,6 +49,20 @@ flowchart TD
     D --> E
     E --> F
 ```
+
+Debug：在log文件中通过` UVM error` 找到对应时间点，从Verdi波形体现，再返回RTL代码；
+覆盖率：
+1. 代码覆盖率——RTL代码所便利的行数或列数（翻转覆盖率、行覆盖率等详见“SV测试编写指南第九章”）；
+2. cover group -> cover point -> beans（反应覆盖率到达多少）。
+
+### SV的优势
+
+1. 受约束的随机激励生成；***random constraint***
+2. 功能覆盖率；***coverage***
+3. 更高层次的结构，尤其是面向对象的编程；***class***
+4. 多线程及线程间的通信；`begin...end fork...join/join_any/join_none event semaphore mailbox`（fork...join）[[event 和 mailbox]]
+5. 支持HDL数据类型，例如Verilog的四状态数值； ***0 1 X Z***
+6. 集成了事件仿真器，便于对设计施加控制。
 
 ### 数字IC验证的评价标准
 
@@ -87,31 +104,3 @@ flowchart TD
 - Function coverage的描述与覆盖率收集；
 - 编程语言交互接口：DPI；
 - 断言：assertion；
-
-## 2、SV基本数据类型
-
-### 总览图
-
-![基本数据类型](/images/posts/sv_learning_note/basic-data-type.png "基本数据类型")
-
-```
-//type  data_type   signal_name
-//net or var    2 or 4 state
-var logic a;
-wire logic b;
-```
-
-- 通常可以不定义type，工具自动根据后续变量使用的赋值自动推断成相应的type；
-- wire type必须是4-state，可以多驱动；var type只能单驱动；
-- sv新增加logic类型可以说正是为了替换verilog中的wire和reg类型，logic既可以是wire也可以是var；
-- 为了节省程序内存，sv新增多种2-state类型；
-
-### 类型转换
-
-- 静态类型转换，在编译时进行，不会改变程序的运行时行为；
-类型转换：`data_type'(var) `
-数据位宽转换：`bit_size'(var)`
-符号类型转换：`signed'(var)`，`unsigned'(var)`
-- 动态类型转换，在运行时进行，会改变程序的运行时行为；
-`$cast(des_var,source_var);`
-- 类型转换可以使用`cast`操作符，也可以使用`cast`函数；

@@ -137,7 +137,7 @@ export default function HomePage() {
       <section id="directions" className="writing-section home-section">
         <div className="section-heading">
           <div><span className="section-eyebrow">Categories</span><h2>内容分类</h2></div>
-          <p>按技术、生活、娱乐和杂项整理内容，让不同主题的记录更容易查找。</p>
+          <p>按技术、生活、娱乐、学习和杂项整理内容，让不同主题的记录更容易查找。</p>
         </div>
         <div className="directory-grid">
           {categories.map((category, index) => (
